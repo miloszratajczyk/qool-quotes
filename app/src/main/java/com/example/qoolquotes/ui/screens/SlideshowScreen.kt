@@ -21,13 +21,13 @@ import com.example.qoolquotes.ui.components.MyTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen( modifier: Modifier = Modifier) {
+fun SlideshowScreen( modifier: Modifier = Modifier) {
     val navController = LocalNavController.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MyTopBar(title = "Search")
+            MyTopBar(title = "Slideshow")
         }
 
     ) { innerPadding ->
@@ -36,7 +36,7 @@ fun SearchScreen( modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-Text(text = "c:", fontSize = 64.sp)
+            Text(text = "c:", fontSize = 64.sp)
         }
     }
 }

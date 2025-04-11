@@ -13,17 +13,36 @@ import kotlinx.serialization.Serializable
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation.toRoute
+import com.example.qoolquotes.ui.screens.EditScreen
+import com.example.qoolquotes.ui.screens.QuoteScreen
+import com.example.qoolquotes.ui.screens.SearchScreen
+import com.example.qoolquotes.ui.screens.SettingsScreen
+import com.example.qoolquotes.ui.screens.SlideshowScreen
 
 
 @Serializable
 object HomeScreenDestination
 
 @Serializable
+object SearchScreenDestination
+
+@Serializable
+object SettingsScreenDestination
+
+@Serializable
+object QuoteScreenDestination
+
+@Serializable
+object EditScreenDestination
+
+@Serializable
+object SlideshowScreenDestination
+
+@Serializable
 data class BrowseScreenDestination(
     val selectedView: String,
 )
 
-//TODO: Add other screen destinations as examples above
 
 val LocalNavController = compositionLocalOf<NavHostController> {
     error("NavController not provided")
@@ -38,15 +57,16 @@ fun NavGraph(modifier: Modifier = Modifier) {
         NavHost(
             navController = navController, startDestination = HomeScreenDestination
         ) {
-            composable<HomeScreenDestination> {
-                HomeScreen()
-            }
+            composable<HomeScreenDestination> { HomeScreen() }
+            composable<SearchScreenDestination> { SearchScreen() }
+            composable<SettingsScreenDestination> { SettingsScreen() }
+            composable<QuoteScreenDestination> { QuoteScreen() }
+            composable<EditScreenDestination> { EditScreen() }
+            composable<SlideshowScreenDestination> { SlideshowScreen() }
             composable<BrowseScreenDestination> {
-            val args = it.toRoute<BrowseScreenDestination>()
+                val args = it.toRoute<BrowseScreenDestination>()
                 BrowseScreen(selectedView = args.selectedView)
-
             }
-            //TODO: Add other screen components as examples above
         }
     }
 }
