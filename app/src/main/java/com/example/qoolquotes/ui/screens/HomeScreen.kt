@@ -14,15 +14,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.qoolquotes.navigation.BrowseScreenDestination
+import com.example.qoolquotes.navigation.LocalNavController
+import com.example.qoolquotes.ui.components.MyBottomBar
 import com.example.qoolquotes.ui.components.MyTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun HomeScreen( modifier: Modifier = Modifier) {
+    val navController = LocalNavController.current
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MyTopBar(title = "Home", showBackButton = false)
+            MyTopBar(title = "Home", hideBackButton = true)
         }
 
     ) { innerPadding ->
@@ -33,15 +37,25 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier) {
         ) {
             Button(onClick = {
                 navController.navigate(
-                    BrowseScreenDestination(
-                        selectedView = null,
-                    )
+                    BrowseScreenDestination(selectedView = "images")
                 )
             }) {
-                Text(text = "Go to screen B")
+                Text(text = "Go to Browse images screen")
+            }
+            Button(onClick = {
+                navController.navigate(
+                    BrowseScreenDestination(selectedView = "sounds")
+                )
+            }) {
+                Text(text = "Go to Browse sounds screen")
+            }
+            Button(onClick = {
+                navController.navigate(
+                    BrowseScreenDestination(selectedView = "texts")
+                )
+            }) {
+                Text(text = "Go to Browse texts screen")
             }
         }
     }
-
-
 }

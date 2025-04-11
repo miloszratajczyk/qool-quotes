@@ -9,10 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.qoolquotes.navigation.LocalNavController
 
 @ExperimentalMaterial3Api
 @Composable
-fun MyTopBar(title: String, showBackButton: Boolean = true) {
+fun MyTopBar(title: String, hideBackButton: Boolean = false) {
+    val navController = LocalNavController.current
+
     TopAppBar(
         title = {
             Text(text = title, fontSize = 20.sp)
@@ -22,11 +25,9 @@ fun MyTopBar(title: String, showBackButton: Boolean = true) {
             titleContentColor = Color.White
         ),
         navigationIcon = {
-            if (showBackButton) {
+            if (!hideBackButton) {
                 IconButton(
-                    onClick = {
-//                        navController.popBackStack()
-                    }
+                    onClick = { navController.popBackStack() }
                 ) {
                     Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
                 }
