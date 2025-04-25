@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface QuoteDao {
     @Query("SELECT * FROM quotes ORDER BY author ASC")
-    suspend fun getAllQuotes(): Flow<List<Quote>>
+    fun getAllQuotes(): Flow<List<Quote>>
 }

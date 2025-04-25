@@ -63,7 +63,6 @@ dependencies {
 
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
 
     implementation(libs.navigation.compose)
