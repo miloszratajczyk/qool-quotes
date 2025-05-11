@@ -46,6 +46,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import com.example.qoolquotes.data.SourceType
+import com.example.qoolquotes.ui.components.AudioControlButton
 import com.example.qoolquotes.ui.components.ImageFromUri
 import com.example.qoolquotes.ui.components.SourceTypeDropdown
 
@@ -66,6 +67,13 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
     ) { uri: Uri? ->
         if (uri != null) {
             photoUri = uri
+        }
+    }
+    val audioPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            audioUri = uri
         }
     }
 
@@ -120,9 +128,9 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
                 onSelected = { sourceType = it }
             )
             Box(modifier = Modifier.fillMaxWidth()) {
-if (photoUri != Uri.EMPTY)                ImageFromUri(photoUri)
-
-
+                if (photoUri != Uri.EMPTY) {
+                    ImageFromUri(photoUri)
+                }
             Button(
                 modifier = Modifier.align(Alignment.Center),
                 onClick = {
@@ -131,17 +139,34 @@ if (photoUri != Uri.EMPTY)                ImageFromUri(photoUri)
                 Text("Wybierz zdjęcie dla cytatu")
             }
 
+
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row (modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,)  {
+                if (audioUri != Uri.EMPTY) {
+                    AudioControlButton(audioUri)
+                }
+
+                Button(
+                    onClick = {
+                        audioPickerLauncher.launch("audio/*")
+                    }) {
+                    Text("Wybierz audio dla cytatu")
+                }
+
             }
             Spacer(modifier = Modifier.height(16.dp))
             // Add quote button
             Button(
                 onClick = {
-                    val newQuote = Quote(text = text, author = author, source = source, photoUri = photoUri, audioUri = null, sourceType = sourceType)
+                    val newQuote = Quote(text = text, author = author, source = source, photoUri = photoUri, audioUri = audioUri, sourceType = sourceType)
                     text = ""
                     author = ""
                     source = ""
                     sourceType = SourceType.OTHER
                     photoUri = Uri.EMPTY
+                    audioUri = Uri.EMPTY
                     // Launch a coroutine to insert a quote
                     CoroutineScope(Dispatchers.IO).launch {
                         quoteDao.insertQuote(newQuote)
