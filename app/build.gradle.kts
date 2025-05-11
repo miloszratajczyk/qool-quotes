@@ -67,4 +67,6 @@ dependencies {
 
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }

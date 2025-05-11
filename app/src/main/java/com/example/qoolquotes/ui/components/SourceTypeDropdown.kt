@@ -54,7 +54,7 @@ fun SourceTypeDropdown(
                         onSelected(type)
                         expanded = false
                     },
-                    text = { Text(type.toLabel()) }
+                    text = { Text("Rodzaj źródłą: ${type.toLabel()}") }
                 )
             }
         }

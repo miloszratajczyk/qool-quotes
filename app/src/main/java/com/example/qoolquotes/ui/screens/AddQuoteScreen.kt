@@ -1,5 +1,8 @@
 package com.example.qoolquotes.ui.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +46,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import com.example.qoolquotes.data.SourceType
+import com.example.qoolquotes.ui.components.ImageFromUri
 import com.example.qoolquotes.ui.components.SourceTypeDropdown
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +57,17 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
     var text by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     var source by remember { mutableStateOf("") }
+    var photoUri by remember { mutableStateOf(Uri.EMPTY) }
+    var audioUri by remember { mutableStateOf(Uri.EMPTY) }
     var sourceType by remember { mutableStateOf(SourceType.OTHER) }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            photoUri = uri
+        }
+    }
 
     // Collect quotes in a LaunchedEffect to update UI when data changes
     LaunchedEffect(Unit) {
@@ -105,15 +119,29 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
                 selected = sourceType,
                 onSelected = { sourceType = it }
             )
+            Box(modifier = Modifier.fillMaxWidth()) {
+if (photoUri != Uri.EMPTY)                ImageFromUri(photoUri)
 
+
+            Button(
+                modifier = Modifier.align(Alignment.Center),
+                onClick = {
+                imagePickerLauncher.launch("image/*")
+            }) {
+                Text("Wybierz zdjęcie dla cytatu")
+            }
+
+            }
             Spacer(modifier = Modifier.height(16.dp))
             // Add quote button
             Button(
                 onClick = {
-                    val newQuote = Quote(text = text, author = author, source = source, photoUri = null, audioUri = null, sourceType = SourceType.OTHER)
+                    val newQuote = Quote(text = text, author = author, source = source, photoUri = photoUri, audioUri = null, sourceType = sourceType)
                     text = ""
                     author = ""
                     source = ""
+                    sourceType = SourceType.OTHER
+                    photoUri = Uri.EMPTY
                     // Launch a coroutine to insert a quote
                     CoroutineScope(Dispatchers.IO).launch {
                         quoteDao.insertQuote(newQuote)
