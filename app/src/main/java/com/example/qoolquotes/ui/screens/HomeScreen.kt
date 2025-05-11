@@ -152,7 +152,7 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                         navController.navigate(QuoteScreenDestination)
                     },
                         modifier = Modifier.width(220.dp).padding(5.dp)) {
-                        Text(text = "Wyświetl listę")
+                        Text(text = "Wyświetl listę/dodaj")
                     }
                 }
 
