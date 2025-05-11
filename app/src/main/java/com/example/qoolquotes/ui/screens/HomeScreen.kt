@@ -12,6 +12,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,24 +30,39 @@ import com.example.qoolquotes.navigation.SettingsScreenDestination
 import com.example.qoolquotes.navigation.SlideshowScreenDestination
 import com.example.qoolquotes.ui.components.MyBottomBar
 import com.example.qoolquotes.ui.components.MyTopBar
+import com.example.qoolquotes.data.Quote
+import com.example.qoolquotes.data.QuoteDao
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen( modifier: Modifier = Modifier) {
+fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
     val navController = LocalNavController.current
+
+    var quoteCount by remember { mutableStateOf(0) }
+
+    // Pobieranie liczby cytatów
+    LaunchedEffect(Unit) {
+        quoteDao.getAllQuoteCount().collect { count ->
+            quoteCount = count
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MyTopBar(title = "Home", hideBackButton = true)
+            MyTopBar(title = "Najlepsze cytaty", hideBackButton = true)
         }
-
-    ) { innerPadding ->
+    )
+    { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding).fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            // Statystyki cytatów
+            Text("Znaleziono ${quoteCount} cytatów")
+
             Button(onClick = {
                 navController.navigate(
                     BrowseScreenDestination(selectedView = "images")

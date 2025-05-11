@@ -58,7 +58,7 @@ fun NavGraph(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
         NavHost(
             navController = navController, startDestination = HomeScreenDestination
         ) {
-            composable<HomeScreenDestination> { HomeScreen() }
+            composable<HomeScreenDestination> { HomeScreen(quoteDao = quoteDao) }
             composable<SearchScreenDestination> { SearchScreen() }
             composable<SettingsScreenDestination> { SettingsScreen() }
             composable<QuoteScreenDestination> { QuoteScreen(quoteDao) }

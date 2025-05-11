@@ -76,15 +76,6 @@ fun QuoteScreen(quoteDao: QuoteDao) {
     ) { innerPadding ->
     Column(Modifier.padding(innerPadding).padding(8.dp).fillMaxSize()) {
 
-        // Display the list of quotes
-        LazyColumn {
-            items(quotes) { quote ->
-                QuoteItem(quote, quoteDao)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
         // Input fields to add a new quote
         TextField(
             value = text,
@@ -131,24 +122,40 @@ fun QuoteScreen(quoteDao: QuoteDao) {
         }
 
         Text("Liczba cytatów: ${quoteCount}")
+        // Display the list of quotes
+        LazyColumn {
+            items(quotes) { quote ->
+                QuoteItem(quote, quoteDao)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
     }}
 }
 
 @Composable
 fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
     Column(modifier = Modifier.padding(8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(quote.text)
+                Text("- ${quote.author}")
+            }
 
-        Row (modifier = Modifier.fillMaxWidth(),
-horizontalArrangement =             Arrangement.SpaceBetween
-        ){
-Column {         Text(quote.text)
-    Text("- ${quote.author}") }
             IconButton(
-                onClick = {                     CoroutineScope(Dispatchers.IO).launch {
-                    quoteDao.delete(quote)
-                } }
+                onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        quoteDao.delete(quote)
+                    }
+                }
             ) {
-                Icon(Icons.Filled.Delete, contentDescription = "Back")
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = "Back"
+                )
             }
         }
 
