@@ -13,4 +13,11 @@ class UriTypeConverter {
     fun uriToString(uri: Uri?): String? {
         return uri?.toString()
     }
+
+
+    @TypeConverter
+    fun fromStatus(value: SourceType): String = value.name
+
+    @TypeConverter
+    fun toStatus(value: String): SourceType = SourceType.valueOf(value)
 }

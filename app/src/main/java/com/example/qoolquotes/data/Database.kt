@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Quote::class], version = 1)
+@Database(entities = [Quote::class], version = 2)
 @TypeConverters(UriTypeConverter::class)
 abstract class QuoteDatabase : RoomDatabase() {
     abstract fun quoteDao(): QuoteDao
@@ -21,7 +21,7 @@ abstract class QuoteDatabase : RoomDatabase() {
                     context.applicationContext,
                     QuoteDatabase::class.java,
                     "quote_database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }

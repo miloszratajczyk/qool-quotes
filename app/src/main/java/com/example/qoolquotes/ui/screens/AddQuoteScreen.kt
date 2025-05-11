@@ -42,6 +42,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import com.example.qoolquotes.data.SourceType
+import com.example.qoolquotes.ui.components.SourceTypeDropdown
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +53,7 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
     var text by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     var source by remember { mutableStateOf("") }
+    var sourceType by remember { mutableStateOf(SourceType.OTHER) }
 
     // Collect quotes in a LaunchedEffect to update UI when data changes
     LaunchedEffect(Unit) {
@@ -67,7 +70,10 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
         }
 
     ) { innerPadding ->
-        Column(Modifier.padding(innerPadding).padding(8.dp).fillMaxSize()) {
+        Column(Modifier
+            .padding(innerPadding)
+            .padding(8.dp)
+            .fillMaxSize()) {
 
             // Input fields to add a new quote
             TextField(
@@ -95,12 +101,16 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
                 label = { Text("Źródło") },
                 modifier = Modifier.fillMaxWidth()
             )
+            SourceTypeDropdown(
+                selected = sourceType,
+                onSelected = { sourceType = it }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             // Add quote button
             Button(
                 onClick = {
-                    val newQuote = Quote(text = text, author = author, source = source, photoUri = null, audioUri = null)
+                    val newQuote = Quote(text = text, author = author, source = source, photoUri = null, audioUri = null, sourceType = SourceType.OTHER)
                     text = ""
                     author = ""
                     source = ""

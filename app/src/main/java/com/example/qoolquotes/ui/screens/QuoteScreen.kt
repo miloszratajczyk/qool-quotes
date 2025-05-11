@@ -123,6 +123,8 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
                     )
                 )
             }
+
+
         }
 
         // Nowa linia - treść cytatu
@@ -130,6 +132,12 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
             text = quote.text,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(top = 8.dp)
+        )
+
+        // Test wyświetlania rodzaju źródła
+        Text(
+            text = quote.sourceType.label,
+            style = MaterialTheme.typography.bodySmall
         )
 
         // Przycisk usuwania wyrównany do prawej
