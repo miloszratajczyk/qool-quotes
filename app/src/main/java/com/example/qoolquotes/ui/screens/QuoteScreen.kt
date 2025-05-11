@@ -50,6 +50,7 @@ fun QuoteScreen(quoteDao: QuoteDao) {
     var quoteCount by remember { mutableStateOf(0) }
     var text by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
+    var source by remember { mutableStateOf("") }
 
     // Collect quotes in a LaunchedEffect to update UI when data changes
     LaunchedEffect(Unit) {
@@ -69,13 +70,11 @@ fun QuoteScreen(quoteDao: QuoteDao) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MyTopBar(title = "Search")
+            MyTopBar(title = "Dodaj cytat")
         }
 
     ) { innerPadding ->
     Column(Modifier.padding(innerPadding).padding(8.dp).fillMaxSize()) {
-
-
 
         // Display the list of quotes
         LazyColumn {
@@ -90,8 +89,10 @@ fun QuoteScreen(quoteDao: QuoteDao) {
         TextField(
             value = text,
             onValueChange = { text = it },
-            label = { Text("Quote Text") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("Treść") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
@@ -103,13 +104,22 @@ fun QuoteScreen(quoteDao: QuoteDao) {
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+        TextField(
 
+            value = source,
+            onValueChange = { source = it },
+            label = { Text("Źródło") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
         // Add quote button
         Button(
             onClick = {
-                val newQuote = Quote(text = text, author = author, source = null, photoUri = null, audioUri = null)
+                val newQuote = Quote(text = text, author = author, source = source, photoUri = null, audioUri = null)
                 text = ""
                 author = ""
+                source = ""
                 // Launch a coroutine to insert a quote
                 CoroutineScope(Dispatchers.IO).launch {
                     quoteDao.insertQuote(newQuote)
