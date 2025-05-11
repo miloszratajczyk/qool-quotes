@@ -142,7 +142,7 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
         ) {
             Column {
                 Text(quote.text)
-                Text("- ${quote.author}")
+                Text("- ${quote.author}, '${quote.source}'")
             }
 
             IconButton(

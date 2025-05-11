@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,9 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.qoolquotes.navigation.BrowseScreenDestination
@@ -45,6 +49,7 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
     val navController = LocalNavController.current
 
     var quoteCount by remember { mutableStateOf(0) }
+    var quoteWithImagesCount by remember { mutableStateOf(0) }
     var randomQuote by remember { mutableStateOf<Quote?>(null) }
 
     // Pobieranie liczby cytatów
@@ -59,6 +64,12 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
             randomQuote = quote
         }
     }
+    LaunchedEffect(Unit) {
+        // This will collect the flow and update quotes
+        quoteDao.getQuotesWithImagesCount().collect { count ->
+            quoteWithImagesCount = count
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -68,7 +79,9 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
     )
     { innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding).fillMaxSize(),
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -109,9 +122,64 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                 Text("Brak cytatów w bazie danych")
             }
 
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp)
+            ) {
 
-            // Statystyki cytatów
-            Text("Znaleziono ${quoteCount} cytatów")
+                Text(
+                    text = "Twoje cytaty:\n",
+                    fontSize = 24.sp,
+                )
+
+                // Statystyki cytatów
+                Text(
+                    buildAnnotatedString {
+                        append("Znaleziono ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraBold)) {
+                            append("$quoteCount")
+                        }
+                        append(" cytatów")
+                    },
+                    fontSize = 16.sp
+                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Button(onClick = {
+                        navController.navigate(QuoteScreenDestination)
+                    },
+                        modifier = Modifier.width(220.dp).padding(5.dp)) {
+                        Text(text = "Wyświetl listę")
+                    }
+                }
+
+                Text(
+                    buildAnnotatedString {
+                        append("Znaleziono ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraBold)) {
+                            append("$quoteWithImagesCount")
+                        }
+                        append(" cytatów z obrazami")
+                    },
+                    fontSize = 16.sp
+                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Button(onClick = {
+                        navController.navigate(SlideshowScreenDestination)
+                    },
+                        modifier = Modifier.width(220.dp).padding(5.dp)) {
+                        Text(text = "Wyświetl pokaz slajdów")
+                    }
+                }
+            }
+
+            Text(text = "For debug purpuses", modifier = Modifier.padding(32.dp))
 
             Button(onClick = {
                 navController.navigate(
@@ -134,7 +202,6 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
             }) {
                 Text(text = "Go to Browse texts screen")
             }
-            Text(text = "For debug purpuses", modifier = Modifier.padding(32.dp))
             Button(onClick = {
                 navController.navigate(SearchScreenDestination)
             }) {
@@ -146,19 +213,9 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                 Text(text = "Go to EditScreenDestination")
             }
             Button(onClick = {
-                navController.navigate(QuoteScreenDestination)
-            }) {
-                Text(text = "Go to QuoteScreenDestination")
-            }
-            Button(onClick = {
                 navController.navigate(SettingsScreenDestination)
             }) {
                 Text(text = "Go to SettingsScreenDestination")
-            }
-            Button(onClick = {
-                navController.navigate(SlideshowScreenDestination)
-            }) {
-                Text(text = "Go to SlideshowScreenDestination")
             }
         }
     }
