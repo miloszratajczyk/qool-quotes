@@ -50,4 +50,7 @@ interface QuoteDao {
     """)
      fun searchQuotes(query: String): Flow<List<Quote>>
 
+     @Query("SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1")
+      fun getRandomQuote(): Flow<Quote>
+
 }

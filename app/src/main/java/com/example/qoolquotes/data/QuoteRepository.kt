@@ -26,6 +26,10 @@ class QuoteRepository(private val quoteDao: QuoteDao) {
     // Search quotes based on text, author, source, or media content
      fun searchQuotes(query: String): Flow<List<Quote>> = quoteDao.searchQuotes(query)
 
+    // Fetch a random quote
+     fun getRandomQuote(): Flow<Quote> = quoteDao.getRandomQuote()
+
+
     // Insert a quote
     suspend fun insertQuote(quote: Quote) {
         quoteDao.insertQuote(quote)
