@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation.toRoute
+import com.example.qoolquotes.data.QuoteDao
 import com.example.qoolquotes.ui.screens.EditScreen
 import com.example.qoolquotes.ui.screens.QuoteScreen
 import com.example.qoolquotes.ui.screens.SearchScreen
@@ -49,7 +50,7 @@ val LocalNavController = compositionLocalOf<NavHostController> {
 }
 
 @Composable
-fun NavGraph(modifier: Modifier = Modifier) {
+fun NavGraph(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
     val navController = rememberNavController()
 
 
@@ -60,7 +61,7 @@ fun NavGraph(modifier: Modifier = Modifier) {
             composable<HomeScreenDestination> { HomeScreen() }
             composable<SearchScreenDestination> { SearchScreen() }
             composable<SettingsScreenDestination> { SettingsScreen() }
-            composable<QuoteScreenDestination> { QuoteScreen() }
+            composable<QuoteScreenDestination> { QuoteScreen(quoteDao) }
             composable<EditScreenDestination> { EditScreen() }
             composable<SlideshowScreenDestination> { SlideshowScreen() }
             composable<BrowseScreenDestination> {

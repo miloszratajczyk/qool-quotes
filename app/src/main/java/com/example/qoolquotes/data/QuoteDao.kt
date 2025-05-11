@@ -21,24 +21,24 @@ interface QuoteDao {
 
 
     @Query("SELECT * FROM quotes")
-    suspend fun getAllQuotes(): Flow<List<Quote>>
+     fun getAllQuotes(): Flow<List<Quote>>
 
     @Query("SELECT COUNT(*) FROM quotes")
-    suspend fun getAllQuoteCount(): Int
+     fun getAllQuoteCount():  Flow<Int>
 
 
     @Query("SELECT * FROM quotes WHERE photo IS NOT NULL AND photo != ''")
-    suspend fun getQuotesWithImages(): Flow<List<Quote>>
+     fun getQuotesWithImages(): Flow<List<Quote>>
 
     @Query("SELECT COUNT(*) FROM quotes WHERE photo IS NOT NULL AND photo != ''")
-    suspend fun getQuotesWithImagesCount(): Int
+     fun getQuotesWithImagesCount():  Flow<Int>
 
 
     @Query("SELECT * FROM quotes WHERE audio IS NOT NULL AND audio != ''")
-    suspend fun getQuotesWithAudio(): Flow<List<Quote>>
+     fun getQuotesWithAudio(): Flow<List<Quote>>
 
-    @Query("SELECT COUNT(*) FROM quotes WHERE photo IS NOT NULL AND photo != ''")
-    suspend fun getQuotesWithAudioCount(): Int
+    @Query("SELECT COUNT(*) FROM quotes WHERE audio IS NOT NULL AND audio != ''")
+     fun getQuotesWithAudioCount():  Flow<Int>
 
     @Query("""
         SELECT * FROM quotes 
@@ -48,6 +48,6 @@ interface QuoteDao {
         OR photo IS NOT NULL AND photo != '' 
         OR audio IS NOT NULL AND audio != ''
     """)
-    suspend fun searchQuotes(query: String): Flow<List<Quote>>
+     fun searchQuotes(query: String): Flow<List<Quote>>
 
 }
