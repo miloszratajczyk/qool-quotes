@@ -14,6 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation.toRoute
 import com.example.qoolquotes.data.QuoteDao
+import com.example.qoolquotes.ui.screens.AddQuoteScreen
 import com.example.qoolquotes.ui.screens.EditScreen
 import com.example.qoolquotes.ui.screens.QuoteScreen
 import com.example.qoolquotes.ui.screens.SearchScreen
@@ -40,6 +41,9 @@ object EditScreenDestination
 object SlideshowScreenDestination
 
 @Serializable
+object AddQuoteScreenDestination
+
+@Serializable
 data class BrowseScreenDestination(
     val selectedView: String,
 )
@@ -60,6 +64,7 @@ fun NavGraph(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
         ) {
             composable<HomeScreenDestination> { HomeScreen(quoteDao = quoteDao) }
             composable<SearchScreenDestination> { SearchScreen() }
+            composable<AddQuoteScreenDestination> { AddQuoteScreen(quoteDao = quoteDao) }
             composable<SettingsScreenDestination> { SettingsScreen() }
             composable<QuoteScreenDestination> { QuoteScreen(quoteDao) }
             composable<EditScreenDestination> { EditScreen() }

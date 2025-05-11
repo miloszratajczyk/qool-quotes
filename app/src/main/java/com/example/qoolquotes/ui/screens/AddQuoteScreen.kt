@@ -1,6 +1,5 @@
 package com.example.qoolquotes.ui.screens
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,17 +37,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuoteScreen(quoteDao: QuoteDao) {
+fun AddQuoteScreen(quoteDao: QuoteDao) {
     var quotes by remember { mutableStateOf<List<Quote>>(emptyList()) }
     var quoteCount by remember { mutableStateOf(0) }
     var text by remember { mutableStateOf("") }
@@ -63,80 +60,73 @@ fun QuoteScreen(quoteDao: QuoteDao) {
         }
     }
 
-    // Collect the quote count in a LaunchedEffect
-    LaunchedEffect(Unit) {
-        // Collect the count of quotes
-        quoteDao.getAllQuoteCount().collect { count ->
-            quoteCount = count  // Update the count
-        }
-    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MyTopBar(title = "Lista cytatów")
+            MyTopBar(title = "Dodaj cytat")
         }
 
     ) { innerPadding ->
-    Column(Modifier.padding(innerPadding).padding(8.dp).fillMaxSize()) {
+        Column(Modifier.padding(innerPadding).padding(8.dp).fillMaxSize()) {
 
-        Text("Liczba cytatów: ${quoteCount}")
-        // Display the list of quotes
-        LazyColumn {
-            items(quotes) { quote ->
-                QuoteItem(quote, quoteDao)
+            // Input fields to add a new quote
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Treść") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
+
+                value = author,
+                onValueChange = { author = it },
+                label = { Text("Author") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+
+                value = source,
+                onValueChange = { source = it },
+                label = { Text("Źródło") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            // Add quote button
+            Button(
+                onClick = {
+                    val newQuote = Quote(text = text, author = author, source = source, photoUri = null, audioUri = null)
+                    text = ""
+                    author = ""
+                    source = ""
+                    // Launch a coroutine to insert a quote
+                    CoroutineScope(Dispatchers.IO).launch {
+                        quoteDao.insertQuote(newQuote)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Add Quote")
             }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-    }}
 }
 
 @Composable
 fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
-    Column(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .padding(12.dp)
-    ) {
-        // Pierwsza linia - autor i źródło pogrubione
-        Row {
-            if (quote.author.isNotBlank()) {
-                Text(
-                    text = "${quote.author},",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-            }
-            if (quote.source?.isNotBlank() == true) {
-                Text(
-                    text = "'${quote.source}'",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-        }
-
-        // Nowa linia - treść cytatu
-        Text(
-            text = quote.text,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 8.dp)
-        )
-
-        // Przycisk usuwania wyrównany do prawej
+    Column(modifier = Modifier.padding(8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Column {
+                Text(quote.text)
+                Text("- ${quote.author}, '${quote.source}'")
+            }
+
             IconButton(
                 onClick = {
                     CoroutineScope(Dispatchers.IO).launch {
@@ -146,10 +136,13 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
             ) {
                 Icon(
                     Icons.Filled.Delete,
-                    contentDescription = "Usuń cytat",
-                    tint = MaterialTheme.colorScheme.error
+                    contentDescription = "Back"
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
     }
 }
