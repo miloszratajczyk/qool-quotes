@@ -83,7 +83,14 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MyTopBar(title = "Najlepsze cytaty", hideBackButton = true)
+            MyTopBar(
+                title = "Najlepsze cytaty",
+                hideBackButton = true,
+                onSettingsClick = {
+                    navController.navigate(SettingsScreenDestination)
+                }
+            )
+
         },
         bottomBar = {
             BottomAppBar {
@@ -254,11 +261,7 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
             }) {
                 Text(text = "Go to EditScreenDestination")
             }
-            Button(onClick = {
-                navController.navigate(SettingsScreenDestination)
-            }) {
-                Text(text = "Go to SettingsScreenDestination")
-            }
+
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.qoolquotes.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.*
@@ -13,7 +14,12 @@ import com.example.qoolquotes.navigation.LocalNavController
 
 @ExperimentalMaterial3Api
 @Composable
-fun MyTopBar(title: String, hideBackButton: Boolean = false) {
+fun MyTopBar(
+    title: String,
+    hideBackButton: Boolean = false,
+    hideSettingsButton: Boolean = false,
+    onSettingsClick: () -> Unit = {} // domyślna pusta akcja
+) {
     val navController = LocalNavController.current
 
     TopAppBar(
@@ -30,6 +36,13 @@ fun MyTopBar(title: String, hideBackButton: Boolean = false) {
                     onClick = { navController.popBackStack() }
                 ) {
                     Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+                }
+            }
+        },
+        actions = {
+            if (!hideSettingsButton) {
+                IconButton(onClick = onSettingsClick) {
+                    Icon(Icons.Default.Settings, contentDescription = "Ustawienia", tint = Color.White)
                 }
             }
         }

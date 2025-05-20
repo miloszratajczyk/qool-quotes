@@ -94,7 +94,10 @@ fun QuoteScreen(quoteDao: QuoteDao) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MyTopBar(title = "Lista cytatów - teksty")
+            MyTopBar(
+                title = "Lista cytatów - teksty",
+                hideSettingsButton = true,
+                )
         },
         bottomBar = {
             BottomAppBar {
