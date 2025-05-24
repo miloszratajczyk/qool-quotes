@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Quote::class], version = 2)
+@Database(entities = [Quote::class], version = 3)
 @TypeConverters(UriTypeConverter::class)
 abstract class QuoteDatabase : RoomDatabase() {
     abstract fun quoteDao(): QuoteDao

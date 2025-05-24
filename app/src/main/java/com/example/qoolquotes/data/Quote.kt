@@ -17,7 +17,7 @@ data class Quote(
     @ColumnInfo(name = "text") val text: String,
     @ColumnInfo(name = "author") val author: String,
     @ColumnInfo(name = "source") val source: String?,
-    @ColumnInfo(name = "photo") val photoUri: Uri?,
-    @ColumnInfo(name = "audio") val audioUri: Uri?,
+    @ColumnInfo(name = "photo") val photoUri: Uri = Uri.EMPTY,
+    @ColumnInfo(name = "audio") val audioUri: Uri = Uri.EMPTY,
     @ColumnInfo(name = "sourcetype") val sourceType: SourceType
 )

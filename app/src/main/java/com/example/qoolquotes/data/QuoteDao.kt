@@ -45,8 +45,6 @@ interface QuoteDao {
         WHERE text LIKE '%' || :query || '%' 
         OR author LIKE '%' || :query || '%' 
         OR source LIKE '%' || :query || '%' 
-        OR photo IS NOT NULL AND photo != '' 
-        OR audio IS NOT NULL AND audio != ''
     """)
      fun searchQuotes(query: String): Flow<List<Quote>>
 
