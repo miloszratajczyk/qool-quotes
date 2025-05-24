@@ -1,5 +1,6 @@
 package com.example.qoolquotes.ui.screens
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,6 +46,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.platform.LocalContext
 import com.example.qoolquotes.data.SourceType
 import com.example.qoolquotes.ui.components.AudioControlButton
 import com.example.qoolquotes.ui.components.ImageFromUri
@@ -62,10 +64,16 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
     var audioUri by remember { mutableStateOf(Uri.EMPTY) }
     var sourceType by remember { mutableStateOf(SourceType.OTHER) }
 
+    val context = LocalContext.current
+
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
             photoUri = uri
         }
     }
@@ -73,6 +81,10 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
             audioUri = uri
         }
     }
