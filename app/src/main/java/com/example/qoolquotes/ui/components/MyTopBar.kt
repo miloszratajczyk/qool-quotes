@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.qoolquotes.navigation.LocalNavController
+import com.example.qoolquotes.navigation.SettingsScreenDestination
 
 @ExperimentalMaterial3Api
 @Composable
@@ -18,7 +19,6 @@ fun MyTopBar(
     title: String,
     hideBackButton: Boolean = false,
     hideSettingsButton: Boolean = false,
-    onSettingsClick: () -> Unit = {} // domyślna pusta akcja
 ) {
     val navController = LocalNavController.current
 
@@ -41,7 +41,7 @@ fun MyTopBar(
         },
         actions = {
             if (!hideSettingsButton) {
-                IconButton(onClick = onSettingsClick) {
+                IconButton(onClick = {navController.navigate(SettingsScreenDestination)}) {
                     Icon(Icons.Default.Settings, contentDescription = "Ustawienia", tint = Color.White)
                 }
             }

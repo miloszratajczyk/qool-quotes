@@ -86,9 +86,6 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
             MyTopBar(
                 title = "Najlepsze cytaty",
                 hideBackButton = true,
-                onSettingsClick = {
-                    navController.navigate(SettingsScreenDestination)
-                }
             )
 
         },
@@ -101,7 +98,7 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                 ) {
                     // Ikona lupy po lewej
                     IconButton(
-                        onClick = { /* Akcja wyszukiwania */ },
+                        onClick = { navController.navigate(SearchScreenDestination) },
                         modifier = Modifier.padding(start = 10.dp)
                     ) {
                         Icon(
@@ -250,11 +247,6 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                 )
             }) {
                 Text(text = "Go to Browse texts screen")
-            }
-            Button(onClick = {
-                navController.navigate(SearchScreenDestination)
-            }) {
-                Text(text = "Go to SearchScreenDestination")
             }
             Button(onClick = {
                 navController.navigate(EditScreenDestination)
