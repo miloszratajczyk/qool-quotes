@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
@@ -82,47 +83,60 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(250.dp) // lub dynamicznie w zależności od treści
+                        .height(300.dp)
                 ) {
-
+                    // Obrazek w tle
                     AsyncImage(
                         model = quote.photoUri,
                         contentDescription = "Tło cytatu",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = 16.dp,
+                                    topEnd = 16.dp,
+                                    bottomStart = 16.dp,
+                                    bottomEnd = 16.dp
+                                )
+                            )
                     )
 
-
-                    Column(
+                    // Ciemne tło z cytatem + autorem
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Bottom,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = quote.text.take(80) + if (quote.text.length > 80) "..." else "",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            textAlign = TextAlign.Left,
-                            modifier = Modifier
-                                .background(
-                                    Color.Black.copy(alpha = 0.6f),
-                                    shape = RoundedCornerShape(6.dp)
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .background(
+                                color = Color.Black.copy(alpha = 0.6f),
+                                shape = RoundedCornerShape(
+                                    bottomStart = 16.dp,
+                                    bottomEnd = 16.dp
                                 )
-                                .padding(6.dp)
-                        )
-
-                        if (quote.author.isNotBlank()) {
+                            )
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Text(
-                                text = "~ ${quote.author}",
-                                fontSize = 16.sp,
-                                fontStyle = FontStyle.Italic,
+                                text = quote.text.take(120) + if (quote.text.length > 120) "..." else "",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
                                 color = Color.White,
                                 textAlign = TextAlign.Center
                             )
+                            if (quote.author.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(6.dp)) // mały odstęp
+                                Text(
+                                    text = "~ ${quote.author}",
+                                    fontSize = 16.sp,
+                                    fontStyle = FontStyle.Italic,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }
@@ -130,13 +144,12 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                 Text("Brak cytatów w bazie danych")
             }
 
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(15.dp)
+                    .padding(8.dp)
             ) {
                 Text("Twoje cytaty:\n", fontSize = 24.sp)
 
@@ -186,12 +199,6 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
             }
 
             Text("For debug purposes", modifier = Modifier.padding(20.dp))
-
-            Button(onClick = {
-                navController.navigate(BrowseScreenDestination(selectedView = "sounds"))
-            }) {
-                Text("Go to Browse sounds screen")
-            }
 
             Button(onClick = {
                 navController.navigate(EditScreenDestination)
