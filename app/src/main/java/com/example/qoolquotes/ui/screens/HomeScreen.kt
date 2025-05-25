@@ -1,6 +1,8 @@
 package com.example.qoolquotes.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -9,6 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -18,6 +22,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.example.qoolquotes.navigation.*
 import com.example.qoolquotes.ui.components.MyTopBar
 import com.example.qoolquotes.viewmodel.HomeScreenViewModel
@@ -72,35 +77,54 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("LOSOWY CYTAT")
 
             randomQuote?.let { quote ->
-                Text(
-                    text = quote.text,
-                    fontSize = 24.sp,
-                    lineHeight = 36.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp) // lub dynamicznie w zależności od treści
+                ) {
 
-                if (quote.author.isNotBlank()) {
-                    Text(
-                        text = "~ ${quote.author}",
-                        fontSize = 18.sp,
-                        fontStyle = FontStyle.Italic,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                    AsyncImage(
+                        model = quote.photoUri,
+                        contentDescription = "Tło cytatu",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
                     )
-                }
 
-                if (!quote.source.isNullOrBlank()) {
-                    Text(
-                        text = "Źródło: ${quote.source}",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Center
-                    )
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Bottom,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = quote.text.take(80) + if (quote.text.length > 80) "..." else "",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier
+                                .background(
+                                    Color.Black.copy(alpha = 0.6f),
+                                    shape = RoundedCornerShape(6.dp)
+                                )
+                                .padding(6.dp)
+                        )
+
+                        if (quote.author.isNotBlank()) {
+                            Text(
+                                text = "~ ${quote.author}",
+                                fontSize = 16.sp,
+                                fontStyle = FontStyle.Italic,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             } ?: run {
                 Text("Brak cytatów w bazie danych")
