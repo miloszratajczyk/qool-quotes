@@ -1,34 +1,12 @@
 package com.example.qoolquotes.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
@@ -38,48 +16,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.example.qoolquotes.navigation.BrowseScreenDestination
-import com.example.qoolquotes.navigation.EditScreenDestination
-import com.example.qoolquotes.navigation.AddQuoteScreenDestination
-import com.example.qoolquotes.navigation.LocalNavController
-import com.example.qoolquotes.navigation.QuoteScreenDestination
-import com.example.qoolquotes.navigation.SearchScreenDestination
-import com.example.qoolquotes.navigation.SettingsScreenDestination
-import com.example.qoolquotes.navigation.SlideshowScreenDestination
-import com.example.qoolquotes.ui.components.MyBottomBar
-import com.example.qoolquotes.ui.components.MyTopBar
-import com.example.qoolquotes.data.Quote
-import com.example.qoolquotes.data.QuoteDao
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.qoolquotes.navigation.*
+import com.example.qoolquotes.ui.components.MyTopBar
+import com.example.qoolquotes.viewmodel.HomeScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
+fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
     val navController = LocalNavController.current
 
-    var quoteCount by remember { mutableStateOf(0) }
-    var quoteWithImagesCount by remember { mutableStateOf(0) }
-    var randomQuote by remember { mutableStateOf<Quote?>(null) }
-
-    // Pobieranie liczby cytatów
-    LaunchedEffect(Unit) {
-        quoteDao.getAllQuoteCount().collect { count ->
-            quoteCount = count
-        }
-    }
-    LaunchedEffect(Unit) {
-        // This will collect the flow and update quotes
-        quoteDao.getRandomQuote().collect { quote ->
-            randomQuote = quote
-        }
-    }
-    LaunchedEffect(Unit) {
-        // This will collect the flow and update quotes
-        quoteDao.getQuotesWithImagesCount().collect { count ->
-            quoteWithImagesCount = count
-        }
-    }
+    val quoteCount by viewModel.quoteCount.collectAsState()
+    val quoteWithImagesCount by viewModel.quotesWithImagesCount.collectAsState()
+    val randomQuote by viewModel.randomQuote.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -89,7 +39,6 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                 hideBackButton = true,
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
             )
-
         },
         bottomBar = {
             BottomAppBar {
@@ -98,44 +47,34 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Ikona lupy po lewej
                     IconButton(
                         onClick = { navController.navigate(SearchScreenDestination) },
                         modifier = Modifier.padding(start = 10.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Wyszukaj"
-                        )
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "Wyszukaj")
                     }
 
-                    // Ikona plusa po prawej
                     IconButton(
-                        onClick = {
-                            navController.navigate(AddQuoteScreenDestination)
-                        },
+                        onClick = { navController.navigate(AddQuoteScreenDestination) },
                         modifier = Modifier.padding(end = 10.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Dodaj"
-                        )
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Dodaj")
                     }
                 }
             }
         }
-    )
-    { innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("LOSOWY CYTAT")
+
             randomQuote?.let { quote ->
-                // Wyświetlanie tekstu cytatu
                 Text(
                     text = quote.text,
                     fontSize = 24.sp,
@@ -145,7 +84,6 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                // Wyświetlanie autora
                 if (quote.author.isNotBlank()) {
                     Text(
                         text = "~ ${quote.author}",
@@ -156,8 +94,7 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                     )
                 }
 
-                // Wyświetlanie źródła
-                if (quote.source?.isNotBlank() == true) {
+                if (!quote.source.isNullOrBlank()) {
                     Text(
                         text = "Źródło: ${quote.source}",
                         fontSize = 14.sp,
@@ -166,22 +103,19 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                     )
                 }
             } ?: run {
-                // Komunikat gdy nie ma cytatów
                 Text("Brak cytatów w bazie danych")
             }
+
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(15.dp)
             ) {
+                Text("Twoje cytaty:\n", fontSize = 24.sp)
 
-                Text(
-                    text = "Twoje cytaty:\n",
-                    fontSize = 24.sp,
-                )
-
-                // Statystyki cytatów
                 Text(
                     buildAnnotatedString {
                         append("Znaleziono ")
@@ -192,18 +126,17 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                     },
                     fontSize = 16.sp
                 )
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Button(onClick = {
-                        navController.navigate(
-                            BrowseScreenDestination(selectedView = "texts")
-                        )
+
+                Button(
+                    onClick = {
+                        navController.navigate(BrowseScreenDestination(selectedView = "texts"))
                     },
-                        modifier = Modifier.width(220.dp).padding(5.dp)) {
-                        Text(text = "Wyświetl listę")
-                    }
+                    modifier = Modifier
+                        .width(220.dp)
+                        .padding(5.dp)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text("Wyświetl listę")
                 }
 
                 Text(
@@ -216,41 +149,31 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                     },
                     fontSize = 16.sp
                 )
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Button(onClick = {
-                        navController.navigate(SlideshowScreenDestination)
-                    },
-                        modifier = Modifier.width(220.dp).padding(5.dp)) {
-                        Text(text = "Wyświetl pokaz slajdów")
-                    }
+
+                Button(
+                    onClick = { navController.navigate(SlideshowScreenDestination) },
+                    modifier = Modifier
+                        .width(220.dp)
+                        .padding(5.dp)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text("Wyświetl pokaz slajdów")
                 }
             }
 
-            Text(text = "For debug purposes", modifier = Modifier.padding(20.dp))
+            Text("For debug purposes", modifier = Modifier.padding(20.dp))
 
             Button(onClick = {
-                navController.navigate(
-                    BrowseScreenDestination(selectedView = "images")
-                )
+                navController.navigate(BrowseScreenDestination(selectedView = "sounds"))
             }) {
-                Text(text = "Go to Browse images screen")
+                Text("Go to Browse sounds screen")
             }
-            Button(onClick = {
-                navController.navigate(
-                    BrowseScreenDestination(selectedView = "sounds")
-                )
-            }) {
-                Text(text = "Go to Browse sounds screen")
-            }
+
             Button(onClick = {
                 navController.navigate(EditScreenDestination)
             }) {
-                Text(text = "Go to EditScreenDestination")
+                Text("Go to EditScreenDestination")
             }
-
         }
     }
 }

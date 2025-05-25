@@ -95,8 +95,6 @@ fun BrowseTextsScreen(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
         }
     }
         Column(Modifier.padding().padding(8.dp).fillMaxSize()) {
-
-            Text("Liczba cytatów: ${quoteCount}")
             // Display the list of quotes
             LazyColumn {
                 items(quotes) { quote ->
