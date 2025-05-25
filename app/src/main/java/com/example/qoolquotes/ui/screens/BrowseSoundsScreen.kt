@@ -1,10 +1,100 @@
 package com.example.qoolquotes.ui.screens
 
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import com.example.qoolquotes.data.Quote
+import com.example.qoolquotes.data.QuoteDao
+import com.example.qoolquotes.navigation.LocalNavController
+import com.example.qoolquotes.ui.components.AudioControlButton
 
 @Composable
-fun BrowseSoundsScreen(modifier: Modifier = Modifier) {
-    Text(text = "This is the browse sounds screen")
+fun BrowseSoundsScreen(
+    modifier: Modifier = Modifier,
+    quoteDao: QuoteDao
+) {
+    val navController = LocalNavController.current
+    var quotes by remember { mutableStateOf<List<Quote>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        quoteDao.getAllQuotes().collect { quoteList ->
+            quotes = quoteList.filter { it.audioUri != Uri.EMPTY }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(quotes) { quote ->
+                SoundQuoteItem(quote)
+            }
+        }
+    }
+}
+
+@Composable
+fun SoundQuoteItem(quote: Quote) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(8.dp)
+    ) {
+        // Miniatura obrazka po lewej
+        if (quote.photoUri != Uri.EMPTY) {
+            AsyncImage(
+                model = quote.photoUri,
+                contentDescription = "quote image",
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Prawa strona: tekst i player audio
+        Column(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            Text(
+                text = quote.text,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "- ${quote.author}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Player audio po prawej
+        AudioControlButton(uri = quote.audioUri)
+    }
 }
