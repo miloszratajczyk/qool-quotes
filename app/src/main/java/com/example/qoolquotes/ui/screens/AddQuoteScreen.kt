@@ -78,7 +78,7 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
         }
     }
     val audioPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         if (uri != null) {
             context.contentResolver.takePersistableUriPermission(
@@ -165,7 +165,7 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
 
                 Button(
                     onClick = {
-                        audioPickerLauncher.launch("audio/*")
+                        audioPickerLauncher.launch(arrayOf("audio/*"))
                     }) {
                     Text("Wybierz audio dla cytatu")
                 }

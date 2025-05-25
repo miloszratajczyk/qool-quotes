@@ -57,6 +57,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.room.util.query
 import coil.compose.AsyncImage
+import com.example.qoolquotes.ui.components.AudioControlButton
 import com.example.qoolquotes.ui.components.ImageFromUri
 
 
@@ -103,6 +104,9 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
                                         .clip(RoundedCornerShape(16.dp)),
                                     contentScale = ContentScale.Crop
                                 )
+                            }
+                            if (quote.audioUri != Uri.EMPTY) {
+                                AudioControlButton(quote.audioUri)
                             }
                         },
                         overlineContent = {
