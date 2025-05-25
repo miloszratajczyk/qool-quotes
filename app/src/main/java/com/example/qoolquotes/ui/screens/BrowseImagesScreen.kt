@@ -56,14 +56,7 @@ fun BrowseImagesScreen(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-        Text(
-            text = "Liczba cytatów: $quoteCount",
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier.fillMaxSize(),
