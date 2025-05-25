@@ -25,6 +25,7 @@ import com.example.qoolquotes.navigation.LocalNavController
 import com.example.qoolquotes.ui.components.MyBottomBar
 import com.example.qoolquotes.ui.components.MyTopBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.TextFields
@@ -51,7 +52,8 @@ fun SettingsScreen(
         topBar = {
             MyTopBar(
                 title = "Ustawienia",
-                hideSettingsButton = true
+                hideSettingsButton = true,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
             )
         }
     ) { innerPadding ->

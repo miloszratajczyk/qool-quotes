@@ -100,7 +100,10 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MyTopBar(title = "Dodaj cytat")
+            MyTopBar(
+                title = "Dodaj cytat",
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
+            )
         }
 
     ) { innerPadding ->

@@ -44,6 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.remember
@@ -70,7 +71,10 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
         modifier = Modifier.fillMaxSize()
             .imePadding(),
         topBar = {
-            MyTopBar(title = "Search", hideSettingsButton = true)
+            MyTopBar(
+                title = "Search",
+                hideSettingsButton = true,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,)
         },
          bottomBar = {
                 RoundedSearchTextField(

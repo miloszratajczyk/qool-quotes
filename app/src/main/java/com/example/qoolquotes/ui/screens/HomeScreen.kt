@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
@@ -86,6 +87,7 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
             MyTopBar(
                 title = "Najlepsze cytaty",
                 hideBackButton = true,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
             )
 
         },
@@ -195,7 +197,9 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
                     Button(onClick = {
-                        navController.navigate(QuoteScreenDestination)
+                        navController.navigate(
+                            BrowseScreenDestination(selectedView = "texts")
+                        )
                     },
                         modifier = Modifier.width(220.dp).padding(5.dp)) {
                         Text(text = "Wyświetl listę")
@@ -240,13 +244,6 @@ fun HomeScreen( modifier: Modifier = Modifier, quoteDao: QuoteDao) {
                 )
             }) {
                 Text(text = "Go to Browse sounds screen")
-            }
-            Button(onClick = {
-                navController.navigate(
-                    BrowseScreenDestination(selectedView = "texts")
-                )
-            }) {
-                Text(text = "Go to Browse texts screen")
             }
             Button(onClick = {
                 navController.navigate(EditScreenDestination)

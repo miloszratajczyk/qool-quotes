@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -16,6 +18,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.qoolquotes.data.QuoteDao
 import com.example.qoolquotes.navigation.BrowseScreenDestination
 import com.example.qoolquotes.navigation.LocalNavController
 import com.example.qoolquotes.navigation.bottomNavItems
@@ -24,14 +27,17 @@ import com.example.qoolquotes.ui.components.MyTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BrowseScreen(selectedView: String, modifier: Modifier = Modifier) {
+fun BrowseScreen(selectedView: String, modifier: Modifier = Modifier, quoteDao: QuoteDao) {
     val bottomNavController = rememberNavController()
 
     val startDestination = bottomNavItems.firstOrNull { it.route == selectedView }?.route ?: "images"
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            MyTopBar(title = "Lista Cytatów")
+            MyTopBar(
+                title = "Lista Cytatów",
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
+            )
         },
         bottomBar = {
             MyBottomBar(navController = bottomNavController, items = bottomNavItems)
@@ -46,7 +52,7 @@ fun BrowseScreen(selectedView: String, modifier: Modifier = Modifier) {
         ) {
             composable("images") { BrowseImagesScreen() }
             composable("sounds") { BrowseSoundsScreen() }
-            composable("texts") { BrowseTextsScreen() }
+            composable("texts") { BrowseTextsScreen(quoteDao = quoteDao) }
         }
     }
 }
