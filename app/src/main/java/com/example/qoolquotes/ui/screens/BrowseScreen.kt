@@ -51,7 +51,7 @@ fun BrowseScreen(selectedView: String, modifier: Modifier = Modifier, quoteDao: 
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("images") { BrowseImagesScreen(quoteDao = quoteDao) }
-            composable("sounds") { BrowseSoundsScreen(quoteDao = quoteDao) }
+            composable("sounds") { BrowseSoundsScreen() }
             composable("texts") { BrowseTextsScreen(quoteDao = quoteDao) }
         }
     }

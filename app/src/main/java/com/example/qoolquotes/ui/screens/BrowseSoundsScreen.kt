@@ -16,23 +16,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import com.example.qoolquotes.data.Quote
-import com.example.qoolquotes.data.QuoteDao
 import com.example.qoolquotes.navigation.LocalNavController
 import com.example.qoolquotes.ui.components.AudioControlButton
+import com.example.qoolquotes.viewmodel.BrowseSoundsViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun BrowseSoundsScreen(
     modifier: Modifier = Modifier,
-    quoteDao: QuoteDao
+    viewModel: BrowseSoundsViewModel = hiltViewModel()
 ) {
     val navController = LocalNavController.current
-    var quotes by remember { mutableStateOf<List<Quote>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
-        quoteDao.getAllQuotes().collect { quoteList ->
-            quotes = quoteList.filter { it.audioUri != Uri.EMPTY }
-        }
-    }
+    val quotes by viewModel.audioQuotes.collectAsState()
 
     Column(
         modifier = Modifier
@@ -59,7 +54,7 @@ fun SoundQuoteItem(quote: Quote) {
             .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(8.dp)
     ) {
-        // Miniatura obrazka po lewej
+        // Miniatura obrazka po lewej (jeśli istnieje)
         if (quote.photoUri != Uri.EMPTY) {
             AsyncImage(
                 model = quote.photoUri,
@@ -75,8 +70,7 @@ fun SoundQuoteItem(quote: Quote) {
 
         // Prawa strona: tekst i player audio
         Column(
-            modifier = Modifier
-                .weight(1f)
+            modifier = Modifier.weight(1f)
         ) {
             Text(
                 text = quote.text,
