@@ -124,25 +124,32 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
             },
     ) {
         // Pierwsza linia - autor i źródło
-        Row {
-            if (quote.author.isNotBlank()) {
-                Text(
-                    text = "${quote.author},",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-            }
-            if (quote.source?.isNotBlank() == true) {
-                Text(
-                    text = "'${quote.source}'",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-        }
+        Text(
+            text = "${quote.author}, ${quote.source}",
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier.padding(end = 8.dp)
+        )
+//        Row {
+//            if (quote.author.isNotBlank()) {
+//                Text(
+//                    text = "${quote.author},",
+//                    style = MaterialTheme.typography.bodyLarge.copy(
+//                        fontWeight = FontWeight.Bold
+//                    ),
+//                    modifier = Modifier.padding(end = 8.dp)
+//                )
+//            }
+//            if (quote.source?.isNotBlank() == true) {
+//                Text(
+//                    text = "'${quote.source}'",
+//                    style = MaterialTheme.typography.bodyLarge.copy(
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                )
+//            }
+//        }
 
         // Cytat i zdjęcie obok siebie
         Row(
