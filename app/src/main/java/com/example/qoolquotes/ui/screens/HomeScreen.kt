@@ -1,6 +1,7 @@
 package com.example.qoolquotes.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -100,6 +101,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                                     bottomEnd = 16.dp
                                 )
                             )
+                            .clickable { navController.navigate(QuoteScreenDestination(quote.id.toLong())) }
                     )
 
                     // Ciemne tło z cytatem + autorem
@@ -115,7 +117,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                                 )
                             )
                             .padding(horizontal = 16.dp, vertical = 12.dp)
-                    ) {
+                                                ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.fillMaxWidth()

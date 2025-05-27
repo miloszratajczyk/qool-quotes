@@ -65,50 +65,48 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.example.qoolquotes.navigation.QuoteScreenDestination
 import com.example.qoolquotes.navigation.SearchScreenDestination
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.qoolquotes.viewmodel.BrowseTextsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BrowseTextsScreen(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
+fun BrowseTextsScreen(viewModel: BrowseTextsViewModel = hiltViewModel()) {
     val navController = LocalNavController.current
-    var quotes by remember { mutableStateOf<List<Quote>>(emptyList()) }
-    var quoteCount by remember { mutableStateOf(0) }
-    var text by remember { mutableStateOf("") }
-    var author by remember { mutableStateOf("") }
-    var source by remember { mutableStateOf("") }
+    val quotes by viewModel.allQuotes.collectAsState()
 
-
-    // Collect quotes in a LaunchedEffect to update UI when data changes
-    LaunchedEffect(Unit) {
-        // This will collect the flow and update quotes
-        quoteDao.getAllQuotes().collect { quoteList ->
-            quotes = quoteList
-        }
-    }
-
-    // Collect the quote count in a LaunchedEffect
-    LaunchedEffect(Unit) {
-        // Collect the count of quotes
-        quoteDao.getAllQuoteCount().collect { count ->
-            quoteCount = count  // Update the count
-        }
-    }
-        Column(Modifier.padding().padding(8.dp).fillMaxSize()) {
-            // Display the list of quotes
-            LazyColumn {
-                items(quotes) { quote ->
-                    QuoteItem(quote, quoteDao)
-                }
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxSize()
+    ) {
+        LazyColumn {
+            items(quotes) { quote ->
+                QuoteItem(
+                    quote = quote,
+                    onClick = {
+                        navController.navigate(QuoteScreenDestination(quote.id.toLong()))
+                    },
+                    onDelete = {
+                        viewModel.deleteQuote(quote)
+                    }
+                )
             }
+        }
 
-            Spacer(modifier = Modifier.height(20.dp))
-        }}
-
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+}
 
 @Composable
-fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
-    val navController = LocalNavController.current
+fun QuoteItem(
+    quote: Quote,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -119,11 +117,9 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(12.dp)
-            .clickable {
-                navController.navigate(QuoteScreenDestination(quote.id.toLong()))
-            },
+            .clickable { onClick() }
     ) {
-        // Pierwsza linia - autor i źródło
+        // Autor + źródło
         Text(
             text = "${quote.author}, ${quote.source}",
             style = MaterialTheme.typography.bodyLarge.copy(
@@ -131,25 +127,6 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
             ),
             modifier = Modifier.padding(end = 8.dp)
         )
-//        Row {
-//            if (quote.author.isNotBlank()) {
-//                Text(
-//                    text = "${quote.author},",
-//                    style = MaterialTheme.typography.bodyLarge.copy(
-//                        fontWeight = FontWeight.Bold
-//                    ),
-//                    modifier = Modifier.padding(end = 8.dp)
-//                )
-//            }
-//            if (quote.source?.isNotBlank() == true) {
-//                Text(
-//                    text = "'${quote.source}'",
-//                    style = MaterialTheme.typography.bodyLarge.copy(
-//                        fontWeight = FontWeight.Bold
-//                    )
-//                )
-//            }
-//        }
 
         // Cytat i zdjęcie obok siebie
         Row(
@@ -158,7 +135,6 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
                 .padding(top = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Treść cytatu
             Text(
                 text = quote.text,
                 style = MaterialTheme.typography.bodyMedium,
@@ -167,10 +143,7 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
                     .padding(end = 8.dp)
             )
 
-            // Zdjęcie po prawej stronie (jeśli istnieje)
             quote.photoUri?.let { photoUri ->
-                val context = LocalContext.current
-                Log.d("QuoteItem", "photoUri = ${photoUri}")
                 AsyncImage(
                     model = photoUri.toString(),
                     contentDescription = "Zdjęcie cytatu",
@@ -188,27 +161,20 @@ fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
             }
         }
 
-        // Rodzaj źródła
         Text(
             text = quote.sourceType.label,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        // Przycisk usuwania wyrównany do prawej
+        // Przycisk usuwania
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            IconButton(
-                onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        quoteDao.delete(quote)
-                    }
-                }
-            ) {
+            IconButton(onClick = onDelete) {
                 Icon(
-                    Icons.Filled.Delete,
+                    imageVector = Icons.Default.Delete,
                     contentDescription = "Usuń cytat",
                     tint = MaterialTheme.colorScheme.error
                 )

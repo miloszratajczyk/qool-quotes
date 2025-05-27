@@ -52,7 +52,7 @@ fun BrowseScreen(selectedView: String, modifier: Modifier = Modifier, quoteDao: 
         ) {
             composable("images") { BrowseImagesScreen() }
             composable("sounds") { BrowseSoundsScreen() }
-            composable("texts") { BrowseTextsScreen(quoteDao = quoteDao) }
+            composable("texts") { BrowseTextsScreen() }
         }
     }
 }

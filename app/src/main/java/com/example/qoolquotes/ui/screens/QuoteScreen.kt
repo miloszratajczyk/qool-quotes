@@ -7,9 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,6 +39,9 @@ import com.example.qoolquotes.data.QuoteDao
 import com.example.qoolquotes.navigation.LocalNavController
 import com.example.qoolquotes.ui.components.MyTopBar
 import com.example.qoolquotes.ui.screens.BrowseTextsScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +52,7 @@ fun QuoteScreen(
     val navController = LocalNavController.current
     var quote by remember { mutableStateOf<Quote?>(null) }
 
-    // Jeśli mamy quoteId, ładujemy szczegóły cytatu
+    // Pobierz cytat na podstawie ID
     LaunchedEffect(quoteId) {
         if (quoteId != null) {
             quoteDao.getQuoteById(quoteId).collect { quotes ->
@@ -56,62 +66,110 @@ fun QuoteScreen(
     Scaffold(
         topBar = {
             MyTopBar(
-                title = if (quoteId == null) "Wszystkie cytaty" else "Szczegóły cytatu",
-                navigationIcon = if (quoteId != null) Icons.AutoMirrored.Filled.ArrowBack else null
+                title = "Podgląd cytatu",
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
-        },
-        content = { innerPadding ->
-            if (quoteId == null) {
-                // Widok listy cytatów
-                BrowseTextsScreen(quoteDao = quoteDao)
-            } else {
-                // Widok szczegółów cytatu
-                quote?.let { q ->
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        // Wyświetl szczegóły cytatu
-                        Row {
-                            if (q.author.isNotBlank()) {
-                                Text(
-                                    text = "${q.author},",
-                                    style = MaterialTheme.typography.headlineSmall.copy(
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    modifier = Modifier.padding(end = 8.dp)
-                                )
-                            }
-                            if (q.source?.isNotBlank() == true) {
-                                Text(
-                                    text = "'${q.source}'",
-                                    style = MaterialTheme.typography.headlineSmall.copy(
-                                        fontWeight = FontWeight.Bold
+        }
+    ) { innerPadding ->
+        quote?.let { q ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Obraz cytatu
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(top = 16.dp)
+                ) {
+                    q.photoUri?.let { uri ->
+                        AsyncImage(
+                            model = uri,
+                            contentDescription = "Tło cytatu",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(
+                                    RoundedCornerShape(
+                                        topStart = 16.dp,
+                                        topEnd = 16.dp,
+                                        bottomStart = 16.dp,
+                                        bottomEnd = 16.dp
                                     )
                                 )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
-                            text = q.text,
-                            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
-                            modifier = Modifier.padding(vertical = 16.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
-                            text = q.sourceType.label,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(top = 8.dp)
                         )
                     }
                 }
+
+                // Treść cytatu
+                Text(
+                    text = q.text,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
+                    modifier = Modifier
+                        .padding(vertical = 24.dp)
+                        .fillMaxWidth(),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Źródło i typ źródła
+                Text(
+                    text = "${q.author}, ${q.source}",
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+                )
+                Text(
+                    text = q.sourceType.label,
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                // Dolne przyciski: usuń - odtwórz - edytuj
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Usuń
+                    IconButton(onClick = {
+                        CoroutineScope(Dispatchers.IO).launch {
+                              // usuwanie todo
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Usuń cytat",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+
+                    // Odtwórz (placeholder)
+                    IconButton(onClick = {
+                        // Można dodać Text-to-Speech lub inny efekt
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Odtwórz cytat"
+                        )
+                    }
+
+                    // Edytuj
+                    IconButton(onClick = {
+                        // Nawigacja do ekranu edycji (jeśli istnieje)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edytuj cytat"
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
-    )
+    }
 }
