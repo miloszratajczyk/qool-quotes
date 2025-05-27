@@ -67,7 +67,7 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
     val context = LocalContext.current
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         if (uri != null) {
             context.contentResolver.takePersistableUriPermission(
@@ -149,7 +149,7 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
             Button(
                 modifier = Modifier.align(Alignment.Center),
                 onClick = {
-                imagePickerLauncher.launch("image/*")
+                imagePickerLauncher.launch(arrayOf("image/*"))
             }) {
                 Text("Wybierz zdjęcie dla cytatu")
             }
