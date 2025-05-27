@@ -36,27 +36,21 @@ import android.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.qoolquotes.viewmodel.BrowseImagesViewModel
 
 @Composable
-fun BrowseImagesScreen(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
+fun BrowseImagesScreen(viewModel: BrowseImagesViewModel = hiltViewModel()) {
     val navController = LocalNavController.current
-    var quotes by remember { mutableStateOf<List<Quote>>(emptyList()) }
-    var quoteCount by remember { mutableStateOf(0) }
+    val quotes by viewModel.imageQuotes.collectAsState()
 
-    LaunchedEffect(Unit) {
-        quoteDao.getAllQuotes().collect { quoteList ->
-            quotes = quoteList.filter { it.photoUri != null } // Filtruj tylko cytaty ze zdjęciami
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        quoteDao.getAllQuoteCount().collect { count ->
-            quoteCount = count
-        }
-    }
-
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier.fillMaxSize(),
@@ -64,23 +58,20 @@ fun BrowseImagesScreen(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(quotes) { quote ->
-                QuoteCard(quote = quote)
+                QuoteCard(quote = quote, onClick = {
+                    navController.navigate(QuoteScreenDestination(quote.id.toLong()))
+                })
             }
         }
     }
 }
 
 @Composable
-fun QuoteCard(quote: Quote) {
-    val navController = LocalNavController.current
-    val context = LocalContext.current
-
+fun QuoteCard(quote: Quote, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
-            .clickable {
-                navController.navigate(QuoteScreenDestination(quote.id.toLong()))
-            }
+            .clickable { onClick() }
             .fillMaxWidth()
             .aspectRatio(1f)
     ) {
@@ -90,7 +81,7 @@ fun QuoteCard(quote: Quote) {
                 contentDescription = "Tło cytatu",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
-                error = painterResource(id = R.drawable.ic_menu_report_image)
+                error = painterResource(id = android.R.drawable.ic_menu_report_image)
             )
         }
 
