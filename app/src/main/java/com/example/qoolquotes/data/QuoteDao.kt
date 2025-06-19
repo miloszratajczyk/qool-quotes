@@ -19,26 +19,23 @@ interface QuoteDao {
     @Update
     suspend fun updateQuote(quote: Quote)
 
-
     @Query("SELECT * FROM quotes")
-     fun getAllQuotes(): Flow<List<Quote>>
+    fun getAllQuotes(): Flow<List<Quote>>
 
     @Query("SELECT COUNT(*) FROM quotes")
-     fun getAllQuoteCount():  Flow<Int>
-
+    fun getAllQuoteCount():  Flow<Int>
 
     @Query("SELECT * FROM quotes WHERE photo IS NOT NULL AND photo != ''")
-     fun getQuotesWithImages(): Flow<List<Quote>>
+    fun getQuotesWithImages(): Flow<List<Quote>>
 
     @Query("SELECT COUNT(*) FROM quotes WHERE photo IS NOT NULL AND photo != ''")
-     fun getQuotesWithImagesCount():  Flow<Int>
-
+    fun getQuotesWithImagesCount():  Flow<Int>
 
     @Query("SELECT * FROM quotes WHERE audio IS NOT NULL AND audio != ''")
-     fun getQuotesWithAudio(): Flow<List<Quote>>
+    fun getQuotesWithAudio(): Flow<List<Quote>>
 
     @Query("SELECT COUNT(*) FROM quotes WHERE audio IS NOT NULL AND audio != ''")
-     fun getQuotesWithAudioCount():  Flow<Int>
+    fun getQuotesWithAudioCount():  Flow<Int>
 
     @Query("""
         SELECT * FROM quotes 
@@ -46,12 +43,11 @@ interface QuoteDao {
         OR author LIKE '%' || :query || '%' 
         OR source LIKE '%' || :query || '%' 
     """)
-     fun searchQuotes(query: String): Flow<List<Quote>>
+    fun searchQuotes(query: String): Flow<List<Quote>>
 
     @Query("SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1")
-      fun getRandomQuote(): Flow<Quote>
+    fun getRandomQuote(): Flow<Quote>
 
     @Query("SELECT * FROM quotes WHERE id = :quoteId")
-      fun getQuoteById(quoteId: Long): Flow<List<Quote>>
-
+    fun getQuoteById(quoteId: Int): Flow<List<Quote>>
 }

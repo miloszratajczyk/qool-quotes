@@ -34,7 +34,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuoteScreen(
-    quoteId: Long? = null,
+    quoteId: Int? = null,
     quoteDao: QuoteDao
 ) {
     val navController = LocalNavController.current
@@ -45,7 +45,6 @@ fun QuoteScreen(
 
     // TTS obsługa
     val tts = remember {
-        // Musimy utworzyć zmienną i przypisać język osobno
         var ttsEngine: TextToSpeech? = null
         ttsEngine = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -58,7 +57,7 @@ fun QuoteScreen(
         onDispose { tts.shutdown() }
     }
 
-    // Pobierz cytat na podstawie ID
+    // Pobierz cytat na podstawie ID (teraz Int!)
     LaunchedEffect(quoteId) {
         if (quoteId != null) {
             quoteDao.getQuoteById(quoteId).collect { quotes: List<Quote> ->
@@ -69,7 +68,6 @@ fun QuoteScreen(
         }
     }
 
-    // Delikatne tło ekranu
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -238,10 +236,9 @@ fun QuoteScreen(
                             }
 
                             // Edytuj (nawigacja do EditScreen)
-                            // Edytuj (nawigacja do EditScreen)
                             IconButton(
                                 onClick = {
-                                    quote?.id?.let { navController.navigate(EditScreenDestination(it.toLong())) }
+                                    quote?.id?.let { navController.navigate(EditScreenDestination(it)) }
                                 },
                                 modifier = Modifier.size(40.dp)
                             ) {

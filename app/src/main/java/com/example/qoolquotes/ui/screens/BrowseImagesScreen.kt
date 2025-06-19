@@ -59,7 +59,7 @@ fun BrowseImagesScreen(viewModel: BrowseImagesViewModel = hiltViewModel()) {
         ) {
             items(quotes) { quote ->
                 QuoteCard(quote = quote, onClick = {
-                    navController.navigate(QuoteScreenDestination(quote.id.toLong()))
+                    navController.navigate(QuoteScreenDestination(quote.id))
                 })
             }
         }

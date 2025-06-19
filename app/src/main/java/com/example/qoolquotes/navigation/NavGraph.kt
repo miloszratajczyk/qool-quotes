@@ -35,13 +35,12 @@ data class BrowseScreenDestination(
 
 @Serializable
 data class QuoteScreenDestination(
-    val quoteId: Long? = null
+    val quoteId: Int? = null
 )
 
-// Poprawna definicja destination z przekazywaniem quoteId
 @Serializable
 data class EditScreenDestination(
-    val quoteId: Long? = null
+    val quoteId: Int? = null
 )
 
 val LocalNavController = compositionLocalOf<NavHostController> {
@@ -78,11 +77,11 @@ fun NavGraph(
                     quoteDao = quoteDao
                 )
             }
-            // Umożliwiamy przekazanie quoteId do EditScreen!
             composable<EditScreenDestination> { backStackEntry ->
                 val args = backStackEntry.toRoute<EditScreenDestination>()
-                EditScreen(quoteId = args.quoteId)
+                EditScreen(quoteId = args.quoteId, quoteDao = quoteDao)
             }
+
         }
     }
 }

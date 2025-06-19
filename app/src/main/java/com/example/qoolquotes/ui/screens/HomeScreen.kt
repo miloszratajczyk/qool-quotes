@@ -101,7 +101,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                                     bottomEnd = 16.dp
                                 )
                             )
-                            .clickable { navController.navigate(QuoteScreenDestination(quote.id.toLong())) }
+                            .clickable { navController.navigate(QuoteScreenDestination(quote.id)) }
                     )
 
                     // Ciemne tło z cytatem + autorem

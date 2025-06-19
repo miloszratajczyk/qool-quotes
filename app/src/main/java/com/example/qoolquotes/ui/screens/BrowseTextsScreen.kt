@@ -88,7 +88,7 @@ fun BrowseTextsScreen(viewModel: BrowseTextsViewModel = hiltViewModel()) {
                 QuoteItem(
                     quote = quote,
                     onClick = {
-                        navController.navigate(QuoteScreenDestination(quote.id.toLong()))
+                        navController.navigate(QuoteScreenDestination(quote.id))
                     },
                     onDelete = {
                         viewModel.deleteQuote(quote)
