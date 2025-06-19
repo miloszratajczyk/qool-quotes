@@ -5,21 +5,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.example.qoolquotes.data.QuoteDao
-import com.example.qoolquotes.data.QuoteDatabase
 import com.example.qoolquotes.navigation.NavGraph
 import com.example.qoolquotes.ui.theme.QoolQuotesTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import jakarta.inject.Inject
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class MyApp : Application()
@@ -30,16 +25,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         enableEdgeToEdge()
         setContent {
-            QoolQuotesTheme {
-                NavGraph(quoteDao = quoteDao)
+            var isDarkTheme by remember { mutableStateOf(false) }
+            // Możesz ustawić domyślnie true/false lub isSystemInDarkTheme()
+
+            QoolQuotesTheme(darkTheme = isDarkTheme) {
+                NavGraph(
+                    quoteDao = quoteDao,
+                    onChangeTheme = { isDarkTheme = !isDarkTheme }
+                )
             }
         }
     }
 }
-
-
-

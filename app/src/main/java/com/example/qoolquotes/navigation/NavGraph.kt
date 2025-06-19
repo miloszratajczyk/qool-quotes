@@ -1,6 +1,5 @@
 package com.example.qoolquotes.navigation
 
-
 import QuoteScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -20,7 +19,6 @@ import com.example.qoolquotes.ui.screens.EditScreen
 import com.example.qoolquotes.ui.screens.SearchScreen
 import com.example.qoolquotes.ui.screens.SettingsScreen
 import com.example.qoolquotes.ui.screens.SlideshowScreen
-
 
 @Serializable
 object HomeScreenDestination
@@ -55,9 +53,12 @@ val LocalNavController = compositionLocalOf<NavHostController> {
 }
 
 @Composable
-fun NavGraph(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
+fun NavGraph(
+    modifier: Modifier = Modifier,
+    quoteDao: QuoteDao,
+    onChangeTheme: () -> Unit // <-- dodane!
+) {
     val navController = rememberNavController()
-
 
     CompositionLocalProvider(LocalNavController provides navController) {
         NavHost(
@@ -66,7 +67,9 @@ fun NavGraph(modifier: Modifier = Modifier, quoteDao: QuoteDao) {
             composable<HomeScreenDestination> { HomeScreen() }
             composable<SearchScreenDestination> { SearchScreen() }
             composable<AddQuoteScreenDestination> { AddQuoteScreen(quoteDao = quoteDao) }
-            composable<SettingsScreenDestination> { SettingsScreen() }
+            composable<SettingsScreenDestination> {
+                SettingsScreen(onChangeTheme = onChangeTheme) // <-- przekazujemy funkcję
+            }
             composable<EditScreenDestination> { EditScreen() }
             composable<SlideshowScreenDestination> { SlideshowScreen() }
             composable<BrowseScreenDestination> {
