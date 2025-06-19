@@ -23,7 +23,7 @@ import com.example.qoolquotes.ui.components.MyTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditScreen( modifier: Modifier = Modifier) {
+fun EditScreen(quoteId: Long? = null, modifier: Modifier = Modifier) {
     val navController = LocalNavController.current
 
     Scaffold(
@@ -34,7 +34,6 @@ fun EditScreen( modifier: Modifier = Modifier) {
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         }
-
     ) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding).fillMaxSize(),
@@ -42,6 +41,7 @@ fun EditScreen( modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "c:", fontSize = 64.sp)
+            Text(text = "quoteId: $quoteId") // Dodaj np. podgląd przekazanego ID
         }
     }
 }

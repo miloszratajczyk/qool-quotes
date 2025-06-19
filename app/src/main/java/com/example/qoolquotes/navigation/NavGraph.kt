@@ -1,24 +1,17 @@
 package com.example.qoolquotes.navigation
 
-import QuoteScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.qoolquotes.ui.screens.HomeScreen
-import com.example.qoolquotes.ui.screens.BrowseScreen
-import kotlinx.serialization.Serializable
-import androidx.navigation.NavHostController
-import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation.toRoute
 import com.example.qoolquotes.data.QuoteDao
-import com.example.qoolquotes.ui.screens.AddQuoteScreen
-import com.example.qoolquotes.ui.screens.EditScreen
-import com.example.qoolquotes.ui.screens.SearchScreen
-import com.example.qoolquotes.ui.screens.SettingsScreen
-import com.example.qoolquotes.ui.screens.SlideshowScreen
+import com.example.qoolquotes.ui.screens.*
+import kotlinx.serialization.Serializable
 
 @Serializable
 object HomeScreenDestination
@@ -28,9 +21,6 @@ object SearchScreenDestination
 
 @Serializable
 object SettingsScreenDestination
-
-@Serializable
-object EditScreenDestination
 
 @Serializable
 object SlideshowScreenDestination
@@ -45,6 +35,12 @@ data class BrowseScreenDestination(
 
 @Serializable
 data class QuoteScreenDestination(
+    val quoteId: Long? = null
+)
+
+// Poprawna definicja destination z przekazywaniem quoteId
+@Serializable
+data class EditScreenDestination(
     val quoteId: Long? = null
 )
 
@@ -68,9 +64,8 @@ fun NavGraph(
             composable<SearchScreenDestination> { SearchScreen() }
             composable<AddQuoteScreenDestination> { AddQuoteScreen(quoteDao = quoteDao) }
             composable<SettingsScreenDestination> {
-                SettingsScreen(onChangeTheme = onChangeTheme) // <-- przekazujemy funkcję
+                SettingsScreen(onChangeTheme = onChangeTheme)
             }
-            composable<EditScreenDestination> { EditScreen() }
             composable<SlideshowScreenDestination> { SlideshowScreen() }
             composable<BrowseScreenDestination> {
                 val args = it.toRoute<BrowseScreenDestination>()
@@ -82,6 +77,11 @@ fun NavGraph(
                     quoteId = args.quoteId,
                     quoteDao = quoteDao
                 )
+            }
+            // Umożliwiamy przekazanie quoteId do EditScreen!
+            composable<EditScreenDestination> { backStackEntry ->
+                val args = backStackEntry.toRoute<EditScreenDestination>()
+                EditScreen(quoteId = args.quoteId)
             }
         }
     }
