@@ -1,51 +1,35 @@
 package com.example.qoolquotes.ui.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.qoolquotes.navigation.BrowseScreenDestination
-import com.example.qoolquotes.navigation.LocalNavController
-import com.example.qoolquotes.ui.components.MyBottomBar
-import com.example.qoolquotes.ui.components.MyTopBar
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.TextFields
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-
+import androidx.compose.ui.unit.sp
+import com.example.qoolquotes.navigation.LocalNavController
+import com.example.qoolquotes.ui.components.MyTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    modifier: Modifier = Modifier,
     onChangeTheme: () -> Unit = {},
-    onPickQuote: () -> Unit = {},
+    onFontChange: (String) -> Unit = {},
     onDeleteAllQuotes: () -> Unit = {}
 ) {
     val navController = LocalNavController.current
+    var showFontDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    val fonts = listOf("Default", "Serif", "Monospace", "Cursive")
+    var selectedFont by remember { mutableStateOf("Default") } // Dodaj, jeśli wyświetlasz wybraną czcionkę
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -73,8 +57,8 @@ fun SettingsScreen(
 
             SettingsItem(
                 icon = Icons.Default.TextFields,
-                text = "Wybierz cytat",
-                onClick = onPickQuote
+                text = "Zmień czcionkę",
+                onClick = { showFontDialog = true }
             )
 
             Divider(modifier = Modifier.padding(vertical = 8.dp))
@@ -83,11 +67,62 @@ fun SettingsScreen(
                 icon = Icons.Default.Delete,
                 text = "Usuń wszystkie dane",
                 iconTint = MaterialTheme.colorScheme.error,
-                onClick = onDeleteAllQuotes
+                onClick = { showDeleteDialog = true }
             )
+
+            Spacer(Modifier.height(16.dp))
+            Text("Wybrana czcionka: $selectedFont", fontSize = 16.sp)
         }
     }
+
+    // Dialog potwierdzający usunięcie wszystkich cytatów
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Potwierdź usunięcie") },
+            text = { Text("Wszystkie cytaty zostaną usunięte. Czy chcesz kontynuować?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        onDeleteAllQuotes()
+                    }
+                ) { Text("Tak, usuń") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) { Text("Anuluj") }
+            }
+        )
+    }
+
+    // (Dialog wyboru czcionki – opcjonalnie możesz tu zostawić)
+    if (showFontDialog) {
+        AlertDialog(
+            onDismissRequest = { showFontDialog = false },
+            title = { Text("Wybierz czcionkę") },
+            text = {
+                Column {
+                    fonts.forEach { font ->
+                        Text(
+                            text = font,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    selectedFont = font
+                                    showFontDialog = false
+                                    onFontChange(font)
+                                }
+                                .padding(8.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {}
+        )
+    }
 }
+
 @Composable
 fun SettingsItem(
     icon: ImageVector,

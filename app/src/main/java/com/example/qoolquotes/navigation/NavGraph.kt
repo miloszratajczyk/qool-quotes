@@ -12,6 +12,8 @@ import androidx.navigation.toRoute
 import com.example.qoolquotes.data.QuoteDao
 import com.example.qoolquotes.ui.screens.*
 import kotlinx.serialization.Serializable
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 @Serializable
 object HomeScreenDestination
@@ -54,6 +56,7 @@ fun NavGraph(
     onChangeTheme: () -> Unit // <-- dodane!
 ) {
     val navController = rememberNavController()
+    val scope = rememberCoroutineScope() // <--- dodaj
 
     CompositionLocalProvider(LocalNavController provides navController) {
         NavHost(
@@ -63,7 +66,12 @@ fun NavGraph(
             composable<SearchScreenDestination> { SearchScreen() }
             composable<AddQuoteScreenDestination> { AddQuoteScreen(quoteDao = quoteDao) }
             composable<SettingsScreenDestination> {
-                SettingsScreen(onChangeTheme = onChangeTheme)
+                SettingsScreen(
+                    onChangeTheme = onChangeTheme,
+                    onDeleteAllQuotes = {
+                        scope.launch { quoteDao.deleteAllQuotes() }
+                    }
+                )
             }
             composable<SlideshowScreenDestination> { SlideshowScreen() }
             composable<BrowseScreenDestination> {
@@ -81,7 +89,6 @@ fun NavGraph(
                 val args = backStackEntry.toRoute<EditScreenDestination>()
                 EditScreen(quoteId = args.quoteId, quoteDao = quoteDao)
             }
-
         }
     }
 }

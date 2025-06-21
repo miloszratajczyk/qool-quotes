@@ -50,4 +50,7 @@ interface QuoteDao {
 
     @Query("SELECT * FROM quotes WHERE id = :quoteId")
     fun getQuoteById(quoteId: Int): Flow<List<Quote>>
+
+    @Query("DELETE FROM quotes")
+    suspend fun deleteAllQuotes()
 }
