@@ -38,7 +38,9 @@ fun EditScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    // Stany pól edycji – domyślnie puste
+    val snackbarHostState = remember { SnackbarHostState() }
+    var showSnackbar by remember { mutableStateOf(false) }
+
     var text by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     var source by remember { mutableStateOf("") }
@@ -47,7 +49,6 @@ fun EditScreen(
     var sourceType by remember { mutableStateOf(SourceType.OTHER) }
     var initialized by remember { mutableStateOf(false) }
 
-    // Pobierz cytat i uzupełnij pola (tylko raz)
     LaunchedEffect(quoteId) {
         if (!initialized && quoteDao != null && quoteId != null) {
             val quote = quoteDao.getQuoteById(quoteId).first().firstOrNull()
@@ -63,7 +64,6 @@ fun EditScreen(
         }
     }
 
-    // Launchery do zdjęcia/audio
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
@@ -94,7 +94,8 @@ fun EditScreen(
                 title = "Edytuj cytat",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         Column(
             Modifier
@@ -102,7 +103,6 @@ fun EditScreen(
                 .padding(8.dp)
                 .fillMaxSize()
         ) {
-            // Treść cytatu
             TextField(
                 value = text,
                 onValueChange = { text = it },
@@ -113,7 +113,6 @@ fun EditScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Autor
             TextField(
                 value = author,
                 onValueChange = { author = it },
@@ -122,7 +121,6 @@ fun EditScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Źródło
             TextField(
                 value = source,
                 onValueChange = { source = it },
@@ -131,14 +129,12 @@ fun EditScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Rodzaj źródła
             SourceTypeDropdown(
                 selected = sourceType,
                 onSelected = { sourceType = it }
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Zdjęcie z przyciskiem usuwania
             Box(modifier = Modifier.fillMaxWidth()) {
                 if (photoUri != Uri.EMPTY) {
                     ImageFromUri(photoUri)
@@ -166,7 +162,6 @@ fun EditScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Audio z przyciskiem usuwania
             Box(modifier = Modifier.fillMaxWidth()) {
                 if (audioUri != Uri.EMPTY) {
                     AudioControlButton(audioUri)
@@ -192,7 +187,6 @@ fun EditScreen(
                     Text("Wybierz audio")
                 }
             }
-            // Wyświetl skrót tytułu (nazwę pliku audio)
             if (audioUri != Uri.EMPTY) {
                 val fileName = remember(audioUri) {
                     var result: String? = null
@@ -213,7 +207,6 @@ fun EditScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Przycisk Anuluj i Zapisz
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -226,7 +219,7 @@ fun EditScreen(
                 }
                 Button(
                     onClick = {
-                        if (quoteDao != null && quoteId != null && text.isNotBlank()) {
+                        if (quoteDao != null && quoteId != null) {
                             scope.launch {
                                 val updatedQuote = Quote(
                                     id = quoteId,
@@ -238,14 +231,25 @@ fun EditScreen(
                                     sourceType = sourceType
                                 )
                                 quoteDao.updateQuote(updatedQuote)
+                                // Ustawiamy flagę do wyświetlenia snackbara po powrocie
+                                navController.previousBackStackEntry
+                                    ?.savedStateHandle
+                                    ?.set("quote_edited", true)
                                 navController.popBackStack()
                             }
                         }
                     },
-                    enabled = text.isNotBlank(),
+                    enabled = text.trim().isNotEmpty() && author.trim().isNotEmpty() && source.trim().isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBDFCC9))
                 ) {
                     Text("Zapisz")
+                }
+            }
+
+            if (showSnackbar) {
+                LaunchedEffect(snackbarHostState) {
+                    snackbarHostState.showSnackbar("Changes saved.")
+                    showSnackbar = false
                 }
             }
         }

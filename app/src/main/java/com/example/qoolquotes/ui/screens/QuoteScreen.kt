@@ -43,6 +43,19 @@ fun QuoteScreen(
     val scope = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // <<<<<<<<<<<<<<<<<<<<<<< SNACKBAR PO EDYCJI
+    LaunchedEffect(Unit) {
+        val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+        val wasEdited = savedStateHandle?.get<Boolean>("quote_edited") == true
+        if (wasEdited) {
+            snackbarHostState.showSnackbar("Changes saved.")
+            savedStateHandle.remove<Boolean>("quote_edited")
+        }
+    }
+    // >>>>>>>>>>>>>>>>>>>>>>> SNACKBAR PO EDYCJI
+
     // TTS obsługa
     val tts = remember {
         var ttsEngine: TextToSpeech? = null
@@ -57,7 +70,6 @@ fun QuoteScreen(
         onDispose { tts.shutdown() }
     }
 
-    // Pobierz cytat na podstawie ID (teraz Int!)
     LaunchedEffect(quoteId) {
         if (quoteId != null) {
             quoteDao.getQuoteById(quoteId).collect { quotes: List<Quote> ->
@@ -80,10 +92,10 @@ fun QuoteScreen(
                     title = "Podgląd cytatu",
                     navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
                 )
-            }
+            },
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
         ) { innerPadding ->
 
-            // Potwierdzenie usuwania
             if (showDialog) {
                 AlertDialog(
                     onDismissRequest = { showDialog = false },
@@ -127,7 +139,6 @@ fun QuoteScreen(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Większy obraz cytatu
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -149,7 +160,6 @@ fun QuoteScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // Treść cytatu
                         Text(
                             text = quote?.text ?: "",
                             style = MaterialTheme.typography.bodyLarge.copy(
@@ -165,7 +175,6 @@ fun QuoteScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // DODATKOWE DANE: AUTOR, ŹRÓDŁO, TYP ŹRÓDŁA
                         quote?.let { q ->
                             if (!q.author.isNullOrBlank() || !q.source.isNullOrBlank()) {
                                 Text(
@@ -195,13 +204,11 @@ fun QuoteScreen(
 
                         Spacer(modifier = Modifier.height(18.dp))
 
-                        // Przyciski
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            // Usuń (z popupem)
                             IconButton(
                                 onClick = { showDialog = true },
                                 modifier = Modifier.size(40.dp)
@@ -213,8 +220,6 @@ fun QuoteScreen(
                                     modifier = Modifier.size(32.dp)
                                 )
                             }
-
-                            // Play (Text-to-Speech)
                             IconButton(
                                 onClick = {
                                     quote?.text?.let { tts.speak(it, TextToSpeech.QUEUE_FLUSH, null, null) }
@@ -234,8 +239,6 @@ fun QuoteScreen(
                                     tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
-
-                            // Edytuj (nawigacja do EditScreen)
                             IconButton(
                                 onClick = {
                                     quote?.id?.let { navController.navigate(EditScreenDestination(it)) }

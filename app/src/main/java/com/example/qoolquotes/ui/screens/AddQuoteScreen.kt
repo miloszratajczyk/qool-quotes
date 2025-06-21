@@ -20,6 +20,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,8 +65,11 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
     var photoUri by remember { mutableStateOf(Uri.EMPTY) }
     var audioUri by remember { mutableStateOf(Uri.EMPTY) }
     var sourceType by remember { mutableStateOf(SourceType.OTHER) }
-
     val context = LocalContext.current
+
+    // Snackbar
+    val snackbarHostState = remember { SnackbarHostState() }
+    var showSnackbar by remember { mutableStateOf(false) }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -89,9 +94,7 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
         }
     }
 
-    // Collect quotes in a LaunchedEffect to update UI when data changes
     LaunchedEffect(Unit) {
-        // This will collect the flow and update quotes
         quoteDao.getAllQuotes().collect { quoteList ->
             quotes = quoteList
         }
@@ -104,15 +107,15 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
                 title = "Dodaj cytat",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
-        }
-
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
-        Column(Modifier
-            .padding(innerPadding)
-            .padding(8.dp)
-            .fillMaxSize()) {
-
-            // Input fields to add a new quote
+        Column(
+            Modifier
+                .padding(innerPadding)
+                .padding(8.dp)
+                .fillMaxSize()
+        ) {
             TextField(
                 value = text,
                 onValueChange = { text = it },
@@ -123,16 +126,13 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
-
                 value = author,
                 onValueChange = { author = it },
                 label = { Text("Author") },
                 modifier = Modifier.fillMaxWidth()
             )
-
             Spacer(modifier = Modifier.height(16.dp))
             TextField(
-
                 value = source,
                 onValueChange = { source = it },
                 label = { Text("Źródło") },
@@ -146,81 +146,67 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
                 if (photoUri != Uri.EMPTY) {
                     ImageFromUri(photoUri)
                 }
-            Button(
-                modifier = Modifier.align(Alignment.Center),
-                onClick = {
-                imagePickerLauncher.launch(arrayOf("image/*"))
-            }) {
-                Text("Wybierz zdjęcie dla cytatu")
-            }
-
-
+                Button(
+                    modifier = Modifier.align(Alignment.Center),
+                    onClick = {
+                        imagePickerLauncher.launch(arrayOf("image/*"))
+                    }
+                ) {
+                    Text("Wybierz zdjęcie dla cytatu")
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Row (modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,)  {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
                 if (audioUri != Uri.EMPTY) {
                     AudioControlButton(audioUri)
                 }
-
                 Button(
                     onClick = {
                         audioPickerLauncher.launch(arrayOf("audio/*"))
-                    }) {
+                    }
+                ) {
                     Text("Wybierz audio dla cytatu")
                 }
-
             }
             Spacer(modifier = Modifier.height(16.dp))
-            // Add quote button
+
+            // Dodaj cytat
             Button(
                 onClick = {
-                    val newQuote = Quote(text = text, author = author, source = source, photoUri = photoUri, audioUri = audioUri, sourceType = sourceType)
+                    val newQuote = Quote(
+                        text = text,
+                        author = author,
+                        source = source,
+                        photoUri = photoUri,
+                        audioUri = audioUri,
+                        sourceType = sourceType
+                    )
                     text = ""
                     author = ""
                     source = ""
                     sourceType = SourceType.OTHER
                     photoUri = Uri.EMPTY
                     audioUri = Uri.EMPTY
-                    // Launch a coroutine to insert a quote
                     CoroutineScope(Dispatchers.IO).launch {
                         quoteDao.insertQuote(newQuote)
                     }
+                    showSnackbar = true
                 },
+                enabled = text.trim().isNotEmpty() && author.trim().isNotEmpty() && source.trim().isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Add Quote")
             }
-}
 
-@Composable
-fun QuoteItem(quote: Quote, quoteDao: QuoteDao) {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(quote.text)
-                Text("- ${quote.author}, '${quote.source}'")
-            }
-
-            IconButton(
-                onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        quoteDao.delete(quote)
-                    }
+            if (showSnackbar) {
+                LaunchedEffect(snackbarHostState) {
+                    snackbarHostState.showSnackbar("Quote added successfully!")
+                    showSnackbar = false
                 }
-            ) {
-                Icon(
-                    Icons.Filled.Delete,
-                    contentDescription = "Back"
-                )
             }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-    }
-}
     }
 }
