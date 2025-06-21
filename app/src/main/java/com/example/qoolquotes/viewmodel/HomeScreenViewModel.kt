@@ -30,6 +30,13 @@ class HomeScreenViewModel @Inject constructor(
             0
         )
 
+    val quotesWithAudioCount: StateFlow<Int> = repository.getQuotesWithAudioCount()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            0
+        )
+
     val randomQuote: StateFlow<Quote?> = repository.getRandomQuote()
         .stateIn(
             viewModelScope,

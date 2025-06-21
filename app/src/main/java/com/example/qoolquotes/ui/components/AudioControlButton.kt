@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.StopCircle
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -57,7 +59,7 @@ fun AudioControlButton(uri: Uri) {
         isPlaying = !isPlaying
     }) {
         Icon(
-            imageVector = if (isPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
+            imageVector = if (isPlaying)Icons.Default.StopCircle else Icons.Default.PlayCircle,
             contentDescription = if (isPlaying) "Pause" else "Play",
             modifier = Modifier.size(48.dp)
         )

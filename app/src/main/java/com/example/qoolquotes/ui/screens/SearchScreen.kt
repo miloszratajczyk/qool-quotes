@@ -1,6 +1,7 @@
 package com.example.qoolquotes.ui.screens
 
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.qoolquotes.navigation.LocalNavController
+import com.example.qoolquotes.navigation.QuoteScreenDestination
 import com.example.qoolquotes.ui.components.AudioControlButton
 import com.example.qoolquotes.ui.components.MyTopBar
 import com.example.qoolquotes.viewmodel.SearchViewModel
@@ -50,6 +53,8 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
     homeViewModel: HomeScreenViewModel = hiltViewModel() // Dodaj HomeScreenViewModel!
 ) {
+    val navController = LocalNavController.current
+
     val searchQuery by viewModel.searchQuery.collectAsState()
     val quotes by viewModel.quotes.collectAsState()
     val allQuotesCount by homeViewModel.quoteCount.collectAsState() // Liczba wszystkich cytatów
@@ -109,6 +114,10 @@ fun SearchScreen(
                     ) {
                         items(quotes) { quote ->
                             ListItem(
+                                modifier = Modifier
+                                    .clickable {
+                                        navController.navigate(QuoteScreenDestination(quote.id))
+                                },
                                 leadingContent = {
                                     if (quote.photoUri != Uri.EMPTY) {
                                         AsyncImage(

@@ -1,10 +1,12 @@
 package com.example.qoolquotes.ui.screens
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -118,22 +120,8 @@ fun QuoteItem(
                     .padding(end = 8.dp)
             )
 
-            // --- TUTAJ JEST ZAMIANA ---
-            if (quote.photoUri == null || quote.photoUri.toString().isBlank()) {
-                Image(
-                    painter = painterResource(id = R.drawable.basic),
-                    contentDescription = "Domyślne zdjęcie cytatu",
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(
-                            RoundedCornerShape(
-                                topStart = 40.dp,
-                                bottomStart = 40.dp
-                            )
-                        ),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
+
+            if (!(quote.photoUri == Uri.EMPTY || quote.photoUri.toString().isBlank())){
                 AsyncImage(
                     model = quote.photoUri.toString(),
                     contentDescription = "Zdjęcie cytatu",
@@ -151,17 +139,18 @@ fun QuoteItem(
             }
         }
 
-        Text(
-            text = quote.sourceType.label,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(top = 8.dp)
-        )
+
 
         // Przycisk usuwania
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Text(
+                text = quote.sourceType.label,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 8.dp)
+            )
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,

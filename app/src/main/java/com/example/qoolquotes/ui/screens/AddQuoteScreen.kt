@@ -203,7 +203,7 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
 
             if (showSnackbar) {
                 LaunchedEffect(snackbarHostState) {
-                    snackbarHostState.showSnackbar("Quote added successfully!")
+                    snackbarHostState.showSnackbar("Cytat został dodany.")
                     showSnackbar = false
                 }
             }

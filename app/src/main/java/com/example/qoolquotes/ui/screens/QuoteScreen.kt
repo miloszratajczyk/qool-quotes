@@ -1,7 +1,9 @@
 package com.example.qoolquotes.ui.screens
 
 import android.content.Context
+import android.net.Uri
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +15,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.StopCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
@@ -33,6 +37,7 @@ import com.example.qoolquotes.ui.components.MyTopBar
 import kotlinx.coroutines.launch
 import java.util.*
 import com.example.qoolquotes.R
+import com.example.qoolquotes.ui.components.AudioControlButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +50,7 @@ fun QuoteScreen(
     var quote by remember { mutableStateOf<Quote?>(null) }
     val scope = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
+    var isSpeaking by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -71,6 +77,22 @@ fun QuoteScreen(
     }
     DisposableEffect(Unit) {
         onDispose { tts.shutdown() }
+    }
+    // Observe speech completion
+    LaunchedEffect(isSpeaking) {
+        if (isSpeaking) {
+            tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) {}
+
+                override fun onDone(utteranceId: String?) {
+                    isSpeaking = false
+                }
+
+                override fun onError(utteranceId: String?) {
+                    isSpeaking = false
+                }
+            })
+        }
     }
 
     LaunchedEffect(quoteId) {
@@ -149,7 +171,7 @@ fun QuoteScreen(
                                 .clip(RoundedCornerShape(18.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
                         ) {
-                            // --- TU JEST WAŻNY FRAGMENT ---
+
                             if (quote?.photoUri == null || quote?.photoUri.toString().isBlank()) {
                                 Image(
                                     painter = painterResource(id = R.drawable.basic),
@@ -233,24 +255,53 @@ fun QuoteScreen(
                                     modifier = Modifier.size(32.dp)
                                 )
                             }
-                            IconButton(
-                                onClick = {
-                                    quote?.text?.let { tts.speak(it, TextToSpeech.QUEUE_FLUSH, null, null) }
-                                },
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .border(
-                                        2.dp,
-                                        MaterialTheme.colorScheme.onSurface,
-                                        CircleShape
+                            if (quote?.audioUri == Uri.EMPTY) {
+
+                                IconButton(
+                                    onClick = {
+                                        quote?.text?.let {
+                                            if (isSpeaking) {
+                                                tts.stop()
+                                                isSpeaking = false
+                                            } else {
+                                                tts.speak(
+                                                    it,
+                                                    TextToSpeech.QUEUE_FLUSH,
+                                                    null,
+                                                    null
+                                                )
+                                                isSpeaking = true
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .size(64.dp)
+                                        .border(
+                                            2.dp,
+                                            MaterialTheme.colorScheme.onSurface,
+                                            CircleShape
+                                        )
+                                ) {
+                                    Icon(
+                                        imageVector = if (isSpeaking) Icons.Default.StopCircle else Icons.Default.PlayCircle,
+                                        contentDescription = "Odtwórz cytat",
+                                        modifier = Modifier.size(36.dp),
+                                        tint = MaterialTheme.colorScheme.onSurface
                                     )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = "Odtwórz cytat",
-                                    modifier = Modifier.size(36.dp),
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
+                                }
+                            } else if (quote != null) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(64.dp)
+                                        .border(
+                                            2.dp,
+                                            MaterialTheme.colorScheme.onSurface,
+                                            CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    AudioControlButton(quote!!.audioUri)
+                                }
                             }
                             IconButton(
                                 onClick = {

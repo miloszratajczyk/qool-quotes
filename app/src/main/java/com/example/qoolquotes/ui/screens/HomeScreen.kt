@@ -1,5 +1,6 @@
 package com.example.qoolquotes.ui.screens
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,7 +35,6 @@ import com.example.qoolquotes.viewmodel.HomeScreenViewModel
 import com.example.qoolquotes.R
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
@@ -41,6 +42,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
 
     val quoteCount by viewModel.quoteCount.collectAsState()
     val quoteWithImagesCount by viewModel.quotesWithImagesCount.collectAsState()
+    val quoteWithAudioCount by viewModel.quotesWithAudioCount.collectAsState()
     val randomQuote by viewModel.randomQuote.collectAsState()
 
     Scaffold(
@@ -64,6 +66,13 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                         modifier = Modifier.padding(start = 10.dp)
                     ) {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "Wyszukaj")
+                    }
+
+                    IconButton(
+                        onClick = { navController.navigate(SlideshowScreenDestination) },
+                        modifier = Modifier.padding(start = 10.dp)
+                    ) {
+                        Icon(imageVector = Icons.Default.AutoStories, contentDescription = "Przeglądaj")
                     }
 
                     IconButton(
@@ -91,8 +100,8 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                         .fillMaxWidth()
                         .height(300.dp)
                 ) {
-                    if (quote.photoUri == null || quote.photoUri.toString().isBlank()) {
-                        androidx.compose.foundation.Image(
+                    if (quote.photoUri == Uri.EMPTY || quote.photoUri.toString().isBlank()) {
+                        Image(
                             painter = painterResource(id = R.drawable.basic),
                             contentDescription = "Domyślne tło cytatu",
                             contentScale = ContentScale.Crop,
@@ -181,11 +190,10 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                         navController.navigate(BrowseScreenDestination(selectedView = "texts"))
                     },
                     modifier = Modifier
-                        .width(220.dp)
-                        .padding(5.dp)
+                        .padding(vertical = 4.dp)
                         .align(Alignment.CenterHorizontally)
                 ) {
-                    Text("Wyświetl listę")
+                    Text("Wyświetl wszystkie cytaty")
                 }
 
                 Text(
@@ -200,23 +208,39 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                 )
 
                 Button(
-                    onClick = { navController.navigate(SlideshowScreenDestination) },
+                    onClick = {
+                        navController.navigate(BrowseScreenDestination(selectedView = "images"))
+                    },
                     modifier = Modifier
-                        .width(220.dp)
-                        .padding(5.dp)
+                        .padding(vertical = 4.dp)
                         .align(Alignment.CenterHorizontally)
                 ) {
-                    Text("Wyświetl pokaz slajdów")
+                    Text("Wyświetl cytaty z obrazem")
+                }
+
+                Text(
+                    buildAnnotatedString {
+                        append("Znaleziono ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraBold)) {
+                            append("$quoteWithAudioCount")
+                        }
+                        append(" cytatów z dżwiękiem")
+                    },
+                    fontSize = 16.sp
+                )
+
+                Button(
+                    onClick = {
+                        navController.navigate(BrowseScreenDestination(selectedView = "sounds")) },
+                    modifier = Modifier
+                        .padding(vertical = 4.dp)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text("Wyświetl cytaty z dźwiękiem")
                 }
             }
 
-            Text("For debug purposes", modifier = Modifier.padding(20.dp))
 
-            Button(onClick = {
-                navController.navigate(EditScreenDestination)
-            }) {
-                Text("Go to EditScreenDestination")
-            }
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.qoolquotes.ui.screens
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,6 +23,7 @@ import com.example.qoolquotes.viewmodel.BrowseSoundsViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
+import com.example.qoolquotes.navigation.QuoteScreenDestination
 
 @Composable
 fun BrowseSoundsScreen(
@@ -49,7 +51,11 @@ fun BrowseSoundsScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(quotes) { quote ->
-                    SoundQuoteItem(quote)
+                    Box(modifier = Modifier.clickable {
+                        navController.navigate(QuoteScreenDestination(quote.id))
+                    }) {
+                        SoundQuoteItem(quote)
+                    }
                 }
             }
         }
