@@ -1,43 +1,11 @@
 package com.example.qoolquotes.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.qoolquotes.data.Quote
-import com.example.qoolquotes.data.QuoteDao
-import com.example.qoolquotes.navigation.BrowseScreenDestination
-import com.example.qoolquotes.navigation.LocalNavController
-import com.example.qoolquotes.ui.components.MyBottomBar
-import com.example.qoolquotes.ui.components.MyTopBar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -50,27 +18,26 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.List
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.ui.text.font.FontWeight
-import com.example.qoolquotes.navigation.AddQuoteScreenDestination
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.material3.Text
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import com.example.qoolquotes.navigation.QuoteScreenDestination
-import com.example.qoolquotes.navigation.SearchScreenDestination
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.example.qoolquotes.data.Quote
+import com.example.qoolquotes.data.QuoteDao
+import com.example.qoolquotes.navigation.*
+import com.example.qoolquotes.ui.components.MyBottomBar
+import com.example.qoolquotes.ui.components.MyTopBar
 import com.example.qoolquotes.viewmodel.BrowseTextsViewModel
+import com.example.qoolquotes.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,7 +75,6 @@ fun BrowseTextsScreen(viewModel: BrowseTextsViewModel = hiltViewModel()) {
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
-
 
 @Composable
 fun QuoteItem(
@@ -152,9 +118,24 @@ fun QuoteItem(
                     .padding(end = 8.dp)
             )
 
-            quote.photoUri?.let { photoUri ->
+            // --- TUTAJ JEST ZAMIANA ---
+            if (quote.photoUri == null || quote.photoUri.toString().isBlank()) {
+                Image(
+                    painter = painterResource(id = R.drawable.basic),
+                    contentDescription = "Domyślne zdjęcie cytatu",
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 40.dp,
+                                bottomStart = 40.dp
+                            )
+                        ),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
                 AsyncImage(
-                    model = photoUri.toString(),
+                    model = quote.photoUri.toString(),
                     contentDescription = "Zdjęcie cytatu",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -165,7 +146,7 @@ fun QuoteItem(
                                 bottomStart = 40.dp
                             )
                         ),
-                    error = painterResource(id = android.R.drawable.ic_menu_report_image)
+                    error = painterResource(id = R.drawable.basic)
                 )
             }
         }

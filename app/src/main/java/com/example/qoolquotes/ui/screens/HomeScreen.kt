@@ -1,5 +1,6 @@
 package com.example.qoolquotes.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -28,6 +30,9 @@ import coil.compose.AsyncImage
 import com.example.qoolquotes.navigation.*
 import com.example.qoolquotes.ui.components.MyTopBar
 import com.example.qoolquotes.viewmodel.HomeScreenViewModel
+import com.example.qoolquotes.R
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,23 +91,28 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                         .fillMaxWidth()
                         .height(300.dp)
                 ) {
-                    // Obrazek w tle
-                    AsyncImage(
-                        model = quote.photoUri,
-                        contentDescription = "Tło cytatu",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(
-                                RoundedCornerShape(
-                                    topStart = 16.dp,
-                                    topEnd = 16.dp,
-                                    bottomStart = 16.dp,
-                                    bottomEnd = 16.dp
-                                )
-                            )
-                            .clickable { navController.navigate(QuoteScreenDestination(quote.id)) }
-                    )
+                    if (quote.photoUri == null || quote.photoUri.toString().isBlank()) {
+                        androidx.compose.foundation.Image(
+                            painter = painterResource(id = R.drawable.basic),
+                            contentDescription = "Domyślne tło cytatu",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable { navController.navigate(QuoteScreenDestination(quote.id)) }
+                        )
+                    } else {
+                        AsyncImage(
+                            model = quote.photoUri,
+                            contentDescription = "Tło cytatu",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable { navController.navigate(QuoteScreenDestination(quote.id)) }
+                        )
+                    }
+
 
                     // Ciemne tło z cytatem + autorem
                     Box(
@@ -117,7 +127,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                                 )
                             )
                             .padding(horizontal = 16.dp, vertical = 12.dp)
-                                                ) {
+                    ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.fillMaxWidth()

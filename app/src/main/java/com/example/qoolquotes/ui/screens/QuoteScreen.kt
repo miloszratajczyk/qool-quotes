@@ -2,6 +2,7 @@ package com.example.qoolquotes.ui.screens
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
@@ -30,6 +32,7 @@ import com.example.qoolquotes.navigation.LocalNavController
 import com.example.qoolquotes.ui.components.MyTopBar
 import kotlinx.coroutines.launch
 import java.util.*
+import com.example.qoolquotes.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -146,9 +149,19 @@ fun QuoteScreen(
                                 .clip(RoundedCornerShape(18.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
                         ) {
-                            quote?.photoUri?.let { uri ->
+                            // --- TU JEST WAŻNY FRAGMENT ---
+                            if (quote?.photoUri == null || quote?.photoUri.toString().isBlank()) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.basic),
+                                    contentDescription = "Domyślne tło cytatu",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(18.dp))
+                                )
+                            } else {
                                 AsyncImage(
-                                    model = uri,
+                                    model = quote?.photoUri,
                                     contentDescription = "Tło cytatu",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
