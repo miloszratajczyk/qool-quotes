@@ -13,41 +13,25 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.qoolquotes.navigation.BrowseScreenDestination
-import com.example.qoolquotes.navigation.LocalNavController
-import com.example.qoolquotes.ui.components.MyBottomBar
-import com.example.qoolquotes.ui.components.MyTopBar
-import com.example.qoolquotes.viewmodel.SearchViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
@@ -55,12 +39,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.room.util.query
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.qoolquotes.ui.components.AudioControlButton
-import com.example.qoolquotes.ui.components.ImageFromUri
-
-
+import com.example.qoolquotes.ui.components.MyTopBar
+import com.example.qoolquotes.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,30 +53,32 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
     val quotes by viewModel.quotes.collectAsState()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .imePadding(),
         topBar = {
             MyTopBar(
                 title = "Search",
                 hideSettingsButton = true,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,)
-        },
-         bottomBar = {
-                RoundedSearchTextField(
-                    value = searchQuery,
-                    onValueChange = { viewModel.updateQuery(it) }
-                )
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
+            )
         },
         contentWindowInsets = WindowInsets.ime
     ) { paddingValues ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // Adjust padding when keyboard is visible
+                .padding(paddingValues)
         ) {
+            RoundedSearchTextField(
+                value = searchQuery,
+                onValueChange = { viewModel.updateQuery(it) }
+            )
 
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
                 items(quotes) { quote ->
-
                     ListItem(
                         leadingContent = {
                             if (quote.photoUri != Uri.EMPTY) {
@@ -131,30 +117,15 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
-
-                        },
-//                        supportingContent = {
-//                            Text(quote.photoUri.toString())
-//                        }
-
-//                        supportingContent = {
-//                            if (searchQuery != "") {
-//                                Text(
-//                                    quote.text,
-//                                    maxLines = 2,
-//                                    overflow = TextOverflow.Ellipsis
-//                                )
-//                            }
-//                        }
+                        }
                     )
                     HorizontalDivider()
-
                 }
             }
-
         }
-
+    }
 }
+
 @Composable
 fun HighlightedText(fullText: String, query: String, maxLength: Int = 64) {
     val annotatedString = remember(fullText, query) {
@@ -208,7 +179,7 @@ fun RoundedSearchTextField(
         onValueChange = onValueChange,
         placeholder = { Text(placeholder) },
         trailingIcon = {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+            Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
         },
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier
