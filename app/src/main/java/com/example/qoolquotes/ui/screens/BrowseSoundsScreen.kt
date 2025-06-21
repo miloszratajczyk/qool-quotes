@@ -20,6 +20,8 @@ import com.example.qoolquotes.navigation.LocalNavController
 import com.example.qoolquotes.ui.components.AudioControlButton
 import com.example.qoolquotes.viewmodel.BrowseSoundsViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun BrowseSoundsScreen(
@@ -34,12 +36,21 @@ fun BrowseSoundsScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(quotes) { quote ->
-                SoundQuoteItem(quote)
+        if (quotes.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Nie znaleziono żadnych cytatów z audio.", fontSize = 18.sp)
+            }
+        } else {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(quotes) { quote ->
+                    SoundQuoteItem(quote)
+                }
             }
         }
     }

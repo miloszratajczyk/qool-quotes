@@ -83,23 +83,32 @@ fun BrowseTextsScreen(viewModel: BrowseTextsViewModel = hiltViewModel()) {
             .padding(8.dp)
             .fillMaxSize()
     ) {
-        LazyColumn {
-            items(quotes) { quote ->
-                QuoteItem(
-                    quote = quote,
-                    onClick = {
-                        navController.navigate(QuoteScreenDestination(quote.id))
-                    },
-                    onDelete = {
-                        viewModel.deleteQuote(quote)
-                    }
-                )
+        if (quotes.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Nie znaleziono żadnych cytatów.", fontSize = 18.sp)
+            }
+        } else {
+            LazyColumn {
+                items(quotes) { quote ->
+                    QuoteItem(
+                        quote = quote,
+                        onClick = {
+                            navController.navigate(QuoteScreenDestination(quote.id))
+                        },
+                        onDelete = {
+                            viewModel.deleteQuote(quote)
+                        }
+                    )
+                }
             }
         }
-
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
+
 
 @Composable
 fun QuoteItem(
