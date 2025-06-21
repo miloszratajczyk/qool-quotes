@@ -1,15 +1,9 @@
 package com.example.qoolquotes.ui.screens
 
 import android.net.Uri
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,37 +27,46 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.qoolquotes.ui.components.AudioControlButton
 import com.example.qoolquotes.ui.components.MyTopBar
 import com.example.qoolquotes.viewmodel.SearchViewModel
+import com.example.qoolquotes.viewmodel.HomeScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
+fun SearchScreen(
+    viewModel: SearchViewModel = hiltViewModel(),
+    homeViewModel: HomeScreenViewModel = hiltViewModel() // Dodaj HomeScreenViewModel!
+) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val quotes by viewModel.quotes.collectAsState()
+    val allQuotesCount by homeViewModel.quoteCount.collectAsState() // Liczba wszystkich cytatów
+
+    val isDatabaseEmpty = allQuotesCount == 0
+    val isNoResults = allQuotesCount > 0 && quotes.isEmpty()
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .imePadding(),
+            .fillMaxSize(),
         topBar = {
             MyTopBar(
                 title = "Search",
                 hideSettingsButton = true,
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
-        },
-        contentWindowInsets = WindowInsets.ime
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -75,51 +78,79 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
                 onValueChange = { viewModel.updateQuery(it) }
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(quotes) { quote ->
-                    ListItem(
-                        leadingContent = {
-                            if (quote.photoUri != Uri.EMPTY) {
-                                AsyncImage(
-                                    model = quote.photoUri,
-                                    contentDescription = "quote image",
-                                    modifier = Modifier
-                                        .size(64.dp)
-                                        .clip(RoundedCornerShape(16.dp)),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-                            if (quote.audioUri != Uri.EMPTY) {
-                                AudioControlButton(quote.audioUri)
-                            }
-                        },
-                        overlineContent = {
-                            Text(
-                                if (quote.source != null)
-                                    "${quote.author} - ${quote.source}" else
-                                    quote.author,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        headlineContent = {
-                            if (searchQuery != "") {
-                                HighlightedText(
-                                    fullText = "\"${quote.text}\" - ${quote.author}, ${quote.source}",
-                                    query = searchQuery
-                                )
-                            } else {
-                                Text(
-                                    quote.text,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
+            when {
+                isDatabaseEmpty -> {
+                    Text(
+                        text = "Baza cytatów jest pusta",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 30.dp, bottom = 8.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 13.sp,
+                        color = Color.Black.copy(alpha = 0.38f),
+                        fontWeight = FontWeight.Normal
                     )
-                    HorizontalDivider()
+                }
+                isNoResults -> {
+                    Text(
+                        text = "Brak wyników",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 30.dp, bottom = 8.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 13.sp,
+                        color = Color.Black.copy(alpha = 0.35f),
+                        fontWeight = FontWeight.Normal
+                    )
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(quotes) { quote ->
+                            ListItem(
+                                leadingContent = {
+                                    if (quote.photoUri != Uri.EMPTY) {
+                                        AsyncImage(
+                                            model = quote.photoUri,
+                                            contentDescription = "quote image",
+                                            modifier = Modifier
+                                                .size(64.dp)
+                                                .clip(RoundedCornerShape(16.dp)),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+                                    if (quote.audioUri != Uri.EMPTY) {
+                                        AudioControlButton(quote.audioUri)
+                                    }
+                                },
+                                overlineContent = {
+                                    Text(
+                                        if (quote.source != null)
+                                            "${quote.author} - ${quote.source}" else
+                                            quote.author,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                headlineContent = {
+                                    if (searchQuery != "") {
+                                        HighlightedText(
+                                            fullText = "\"${quote.text}\" - ${quote.author}, ${quote.source}",
+                                            query = searchQuery
+                                        )
+                                    } else {
+                                        Text(
+                                            quote.text,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            )
+                            HorizontalDivider()
+                        }
+                    }
                 }
             }
         }
