@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.qoolquotes.navigation.LocalNavController
 import com.example.qoolquotes.ui.components.HelpButton
 import com.example.qoolquotes.ui.components.MyTopBar
@@ -24,13 +23,13 @@ import com.example.qoolquotes.ui.components.MyTopBar
 fun SettingsScreen(
     onChangeTheme: () -> Unit = {},
     onFontChange: (String) -> Unit = {},
-    onDeleteAllQuotes: () -> Unit = {}
+    onDeleteAllQuotes: () -> Unit = {},
+    selectedFont: String = "Default"
 ) {
     val navController = LocalNavController.current
     var showFontDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val fonts = listOf("Default", "Serif", "Monospace", "Cursive")
-    var selectedFont by remember { mutableStateOf("Default") } // Dodaj, jeśli wyświetlasz wybraną czcionkę
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -56,9 +55,10 @@ fun SettingsScreen(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-            SettingsItem(
+            SettingsItemWithValue(
                 icon = Icons.Default.TextFields,
                 text = "Zmień czcionkę",
+                value = selectedFont,
                 onClick = { showFontDialog = true }
             )
 
@@ -71,9 +71,6 @@ fun SettingsScreen(
                 onClick = { showDeleteDialog = true }
             )
 
-            Spacer(Modifier.height(16.dp))
-            Text("Wybrana czcionka: $selectedFont", fontSize = 16.sp)
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             Spacer(Modifier.height(16.dp))
             HelpButton()
         }
@@ -99,7 +96,7 @@ fun SettingsScreen(
         )
     }
 
-    // (Dialog wyboru czcionki – opcjonalnie możesz tu zostawić)
+    // Dialog wyboru czcionki
     if (showFontDialog) {
         AlertDialog(
             onDismissRequest = { showFontDialog = false },
@@ -112,9 +109,8 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    selectedFont = font
-                                    showFontDialog = false
                                     onFontChange(font)
+                                    showFontDialog = false
                                 }
                                 .padding(8.dp)
                         )
@@ -151,6 +147,41 @@ fun SettingsItem(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@Composable
+fun SettingsItemWithValue(
+    icon: ImageVector,
+    text: String,
+    value: String,
+    iconTint: Color = MaterialTheme.colorScheme.onSurface,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconTint,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

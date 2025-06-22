@@ -5,8 +5,35 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.qoolquotes.R
+import androidx.compose.ui.text.font.Font
 
-// Set of Material typography styles to start with
+val MerriweatherFont = FontFamily(Font(R.font.merriweather_variable))
+val JetBrainsMonoFont = FontFamily(Font(R.font.jetbrainsmono_variable))
+val PacificoFont = FontFamily(Font(R.font.pacifico_variable))
+
+// Funkcja zwracająca typografię na podstawie wyboru użytkownika
+fun getTypographyForFont(fontKey: String): Typography {
+    val fontFamily = when (fontKey) {
+        "Serif" -> MerriweatherFont
+        "Monospace" -> JetBrainsMonoFont
+        "Cursive" -> PacificoFont
+        else -> FontFamily.Default
+    }
+    return Typography(
+        bodyLarge = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            letterSpacing = 0.5.sp
+        )
+        // Możesz dodać tu inne style np. titleLarge, bodyMedium itd.
+    )
+}
+
+
+/*// Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -31,4 +58,4 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     )
     */
-)
+)*/

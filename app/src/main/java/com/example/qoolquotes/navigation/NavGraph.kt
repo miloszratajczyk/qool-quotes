@@ -54,10 +54,14 @@ val LocalNavController = compositionLocalOf<NavHostController> {
 
 @Composable
 fun NavGraph(
-    modifier: Modifier = Modifier, quoteDao: QuoteDao, onChangeTheme: () -> Unit // <-- dodane!
+    modifier: Modifier = Modifier,
+    quoteDao: QuoteDao,
+    onChangeTheme: () -> Unit,
+    selectedFont: String,
+    onFontChange: (String) -> Unit
 ) {
     val navController = rememberNavController()
-    val scope = rememberCoroutineScope() // <--- dodaj
+    val scope = rememberCoroutineScope()
 
     CompositionLocalProvider(LocalNavController provides navController) {
         NavHost(
@@ -68,9 +72,13 @@ fun NavGraph(
             composable<AddQuoteScreenDestination> { AddQuoteScreen(quoteDao = quoteDao) }
             composable<SettingsScreenDestination> {
                 SettingsScreen(
-                    onChangeTheme = onChangeTheme, onDeleteAllQuotes = {
+                    onChangeTheme = onChangeTheme,
+                    onDeleteAllQuotes = {
                         scope.launch { quoteDao.deleteAllQuotes() }
-                    })
+                    },
+                    selectedFont = selectedFont,
+                    onFontChange = onFontChange
+                )
             }
             composable<TutorialScreenDestination> { TutorialScreen() }
             composable<SlideshowScreenDestination> { SlideshowScreen() }
