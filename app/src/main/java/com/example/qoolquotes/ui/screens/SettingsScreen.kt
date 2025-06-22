@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.qoolquotes.navigation.LocalNavController
+import com.example.qoolquotes.ui.components.HelpButton
 import com.example.qoolquotes.ui.components.MyTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +54,7 @@ fun SettingsScreen(
                 onClick = onChangeTheme
             )
 
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             SettingsItem(
                 icon = Icons.Default.TextFields,
@@ -61,7 +62,7 @@ fun SettingsScreen(
                 onClick = { showFontDialog = true }
             )
 
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             SettingsItem(
                 icon = Icons.Default.Delete,
@@ -72,6 +73,9 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(16.dp))
             Text("Wybrana czcionka: $selectedFont", fontSize = 16.sp)
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            Spacer(Modifier.height(16.dp))
+            HelpButton()
         }
     }
 

@@ -3,6 +3,7 @@ package com.example.qoolquotes.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,9 +12,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.qoolquotes.data.QuoteDao
 import com.example.qoolquotes.ui.screens.*
-import kotlinx.serialization.Serializable
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.serialization.Serializable
 
 @Serializable
 object HomeScreenDestination
@@ -23,6 +23,9 @@ object SearchScreenDestination
 
 @Serializable
 object SettingsScreenDestination
+
+@Serializable
+object TutorialScreenDestination
 
 @Serializable
 object SlideshowScreenDestination
@@ -51,9 +54,7 @@ val LocalNavController = compositionLocalOf<NavHostController> {
 
 @Composable
 fun NavGraph(
-    modifier: Modifier = Modifier,
-    quoteDao: QuoteDao,
-    onChangeTheme: () -> Unit // <-- dodane!
+    modifier: Modifier = Modifier, quoteDao: QuoteDao, onChangeTheme: () -> Unit // <-- dodane!
 ) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope() // <--- dodaj
@@ -67,12 +68,11 @@ fun NavGraph(
             composable<AddQuoteScreenDestination> { AddQuoteScreen(quoteDao = quoteDao) }
             composable<SettingsScreenDestination> {
                 SettingsScreen(
-                    onChangeTheme = onChangeTheme,
-                    onDeleteAllQuotes = {
+                    onChangeTheme = onChangeTheme, onDeleteAllQuotes = {
                         scope.launch { quoteDao.deleteAllQuotes() }
-                    }
-                )
+                    })
             }
+            composable<TutorialScreenDestination> { TutorialScreen() }
             composable<SlideshowScreenDestination> { SlideshowScreen() }
             composable<BrowseScreenDestination> {
                 val args = it.toRoute<BrowseScreenDestination>()
@@ -81,8 +81,7 @@ fun NavGraph(
             composable<QuoteScreenDestination> { backStackEntry ->
                 val args = backStackEntry.toRoute<QuoteScreenDestination>()
                 QuoteScreen(
-                    quoteId = args.quoteId,
-                    quoteDao = quoteDao
+                    quoteId = args.quoteId, quoteDao = quoteDao
                 )
             }
             composable<EditScreenDestination> { backStackEntry ->
