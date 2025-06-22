@@ -1,7 +1,6 @@
 package com.example.qoolquotes.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -93,14 +92,13 @@ fun QuoteCard(quote: Quote, modifier: Modifier = Modifier) {
                 }
 
                 Spacer(Modifier.height(8.dp))
-                if (quote.source != null)
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                if (quote.source != null) Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = sourceIcon(quote.sourceType),
                         contentDescription = "Source Type"
                     )
                     Spacer(Modifier.width(4.dp))
-                    Text(quote.source ?: "Nieznane", style = MaterialTheme.typography.bodyMedium)
+                    Text(quote.source, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
