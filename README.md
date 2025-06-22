@@ -42,6 +42,11 @@ qool-quotes/
 ├── gradle/                # Skrypty Gradle
 └── README.md              # Ten plik
 ```
+## 🗺️ Architektura aplikacji
+
+Poniżej znajduje się poglądowy schemat architektury aplikacji:
+
+![appGraph](appGraph.png)
 
 ## 📄 Licencja
 
