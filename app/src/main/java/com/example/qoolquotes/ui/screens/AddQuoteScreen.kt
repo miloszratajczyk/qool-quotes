@@ -198,7 +198,7 @@ fun AddQuoteScreen(quoteDao: QuoteDao) {
                 enabled = text.trim().isNotEmpty() && author.trim().isNotEmpty() && source.trim().isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Add Quote")
+                Text("Dodaj cytat")
             }
 
             if (showSnackbar) {

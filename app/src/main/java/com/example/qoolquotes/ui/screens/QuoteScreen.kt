@@ -59,7 +59,7 @@ fun QuoteScreen(
         val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
         val wasEdited = savedStateHandle?.get<Boolean>("quote_edited") == true
         if (wasEdited) {
-            snackbarHostState.showSnackbar("Changes saved.")
+            snackbarHostState.showSnackbar("Zapisano zmiany")
             savedStateHandle.remove<Boolean>("quote_edited")
         }
     }
