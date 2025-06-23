@@ -2,6 +2,10 @@
 
 **qool-quotes** to minimalistyczna aplikacja na Androida, umożliwiająca przechowywanie i zarządzanie ulubionymi cytatami. Została stworzona z myślą o prostocie i przejrzystości, pozwalając użytkownikom na szybki dostęp do inspirujących treści.
 
+## 🤖 Figma 
+
+https://www.figma.com/design/jj5S3KtFLnJUHmaulfN186/Najlepsze-cytaty?node-id=14-644
+
 ## ✨ Funkcje
 
 - Dodawanie, edytowanie i usuwanie cytatów
